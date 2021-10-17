@@ -21,12 +21,12 @@ public class ImagepipelineStackTest {
     public void testStack() throws IOException {
         App app = new App();
         EtherythingbiigImagePipeline stack = new EtherythingbiigImagePipeline(app, "test", 
-        StackProps.builder()
-            .env(Environment.builder()
-                .account(System.getenv("CDK_DEFAULT_ACCOUNT"))
-                .region(System.getenv("CDK_DEFAULT_REGION"))
-                .build())
-            .build());
+            StackProps.builder()
+                .env(Environment.builder()
+                    .account(System.getenv("CDK_DEFAULT_ACCOUNT"))
+                    .region(System.getenv("CDK_DEFAULT_REGION"))
+                    .build())
+                .build());
 
         JsonNode actual = JSON.valueToTree(app.synth().getStackArtifact(stack.getArtifactId()).getTemplate());
     }
