@@ -16,6 +16,7 @@
     "everythingbiig-aws-imagepipelines/etherythingbiig:amiName": "etherythingbiig-{{imagebuilder:buildVersion}}-{{imagebuilder:buildDate}}",
     "everythingbiig-aws-imagepipelines/etherythingbiig:recipeVersion": "0.0.1",
     "everythingbiig-aws-imagepipelines/etherythingbiig:componentPlatform": "Linux",
-    "everythingbiig-aws-imagepipelines/etherythingbiig:componentVersion": "1.10.8"
+    "everythingbiig-aws-imagepipelines/etherythingbiig:componentVersion": "1.10.8",
+    "everythingbiig-aws-imagepipelines/etherythingbiig:distributionRegions": ["us-east-1"]
   }
 }

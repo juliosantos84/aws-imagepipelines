@@ -1,5 +1,6 @@
 package com.everythingbiig.aws.imagepipelines;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -60,23 +61,42 @@ public class EtherythingbiigImagePipeline extends Stack {
             .tryGetContext("everythingbiig-aws-imagepipelines/etherythingbiig:recipeVersion");
     }
 
-    public CfnImagePipeline getImagePipeline() {
+    @SuppressWarnings("unchecked")
+    protected List<String> getDistributionRegions() {
+        return (List<String>) this.getNode()
+            .tryGetContext("everythingbiig-aws-imagepipelines/etherythingbiig:distributionRegions");
+    }
+
+    protected List<DistributionProperty> getDistributionPropertyList() {
+        List<DistributionProperty> distroProps = new ArrayList<DistributionProperty>();
+        List<String> distroRegions = getDistributionRegions();
+        if (distroRegions == null) {
+            throw new IllegalArgumentException("distributionRegions cannot be null");
+        }
+        for (String distroRegion : distroRegions) {
+            distroProps.add(
+                DistributionProperty.builder()
+                    .amiDistributionConfiguration(new HashMap<String, Object>(){
+                        {
+                            put("name", EtherythingbiigImagePipeline.this.getAmiName());
+                        }
+                    })
+                    .region(distroRegion)
+                    .build()
+            );
+        }
+        return distroProps;
+    }
+
+    protected CfnImagePipeline getImagePipeline() {
 
         if (pipeline == null) {
 
             CfnDistributionConfiguration distroConfig = CfnDistributionConfiguration.Builder
                 .create(this, "etherythingbiigDistroConfig")
                 .name("etherythingbiigDistroConfig")
-                .description("Distributes to us-east-2.")
-                .distributions(Arrays.asList(
-                    DistributionProperty.builder()
-                        .amiDistributionConfiguration(new HashMap<String, Object>(){
-                            {
-                                put("name", EtherythingbiigImagePipeline.this.getAmiName());
-                            }
-                        })
-                        .region(EtherythingbiigImagePipeline.this.getRegion())
-                        .build()))
+                .description("Etherythingbiig Distribution Config.")
+                .distributions(getDistributionPropertyList())
                 .build();
 
             ComponentHelper componentHelper = new ComponentHelper(this, "/imagebuilder/etherythingbiig/components");
