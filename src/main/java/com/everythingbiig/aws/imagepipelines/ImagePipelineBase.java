@@ -1,5 +1,8 @@
 package com.everythingbiig.aws.imagepipelines;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,11 +14,14 @@ import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.services.ec2.LookupMachineImage;
+import software.amazon.awscdk.services.iam.IRole;
+import software.amazon.awscdk.services.iam.Role;
 import software.amazon.awscdk.services.imagebuilder.CfnDistributionConfiguration;
 import software.amazon.awscdk.services.imagebuilder.CfnDistributionConfiguration.DistributionProperty;
 import software.amazon.awscdk.services.imagebuilder.CfnImagePipeline;
 import software.amazon.awscdk.services.imagebuilder.CfnImageRecipe;
 import software.amazon.awscdk.services.imagebuilder.CfnInfrastructureConfiguration;
+import software.amazon.awscdk.services.s3.assets.Asset;
 
 /**
  * Provisions and tests the etherythingbiig AMI used to run
@@ -24,6 +30,7 @@ import software.amazon.awscdk.services.imagebuilder.CfnInfrastructureConfigurati
 public abstract class ImagePipelineBase extends Stack {
 
     private CfnImagePipeline pipeline = null;
+    private IRole imageBuilderRole = null;
 
     public ImagePipelineBase(final Construct scope, final String id) {
         this(scope, id, null);
@@ -62,6 +69,8 @@ public abstract class ImagePipelineBase extends Stack {
 
     protected abstract String getPipelineName();
 
+    protected abstract ComponentHelper getComponentHelper();
+
     protected List<DistributionProperty> getDistributionPropertyList() {
         List<DistributionProperty> distroProps = new ArrayList<DistributionProperty>();
         List<String> distroRegions = getDistributionRegions();
@@ -98,7 +107,7 @@ public abstract class ImagePipelineBase extends Stack {
                 .distributions(getDistributionPropertyList())
                 .build();
 
-            ComponentHelper componentHelper = new ComponentHelper(this, "/imagebuilder/etherythingbiig/components");
+            ComponentHelper componentHelper = getComponentHelper();
 
             CfnImageRecipe recipe = CfnImageRecipe.Builder.create(this, "imageRecipe")
                 .name(getScopePrefixedId("imageRecipe"))
@@ -109,7 +118,7 @@ public abstract class ImagePipelineBase extends Stack {
                 .version(getRecipeVersion())
                 .components(componentHelper.getComponentConfigurationProperties(this))
                 .build();
-            
+
             CfnInfrastructureConfiguration infraConfig = 
                 CfnInfrastructureConfiguration.Builder.create(this, getScopePrefixedId("infraConfig"))
                     .name(getScopePrefixedId("infraConfig"))
@@ -128,5 +137,28 @@ public abstract class ImagePipelineBase extends Stack {
                 .build();
         }
         return pipeline;
+    }
+    
+    protected Asset getAsset(String assetId, String localAssetPath) {
+        Asset asset = null;
+        try {
+            File filePath = Paths.get(ImagePipelineBase.class.getResource(localAssetPath).toURI())
+                .toFile();
+            asset = Asset.Builder.create(this, assetId)
+                .path(filePath.toString())
+                .build();
+        } catch (URISyntaxException ex) {
+            ex.printStackTrace();
+            //TODO handle errors
+            asset = null;
+        }
+        return asset;
+    }
+
+    protected IRole getImageBuilderRoleArn() {
+        if(this.imageBuilderRole == null) {
+            this.imageBuilderRole = Role.fromRoleArn(this, getScopePrefixedId("imageBuilderRoleArn"), String.format("arn:aws:iam::%s:role/EC2InstanceProfileForImageBuilder", this.getAccount()));
+        }
+        return this.imageBuilderRole;
     }
 }

@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.text.CaseUtils;
 
@@ -21,6 +22,10 @@ public class ComponentHelper {
     private String componentResourcePath = null;
 
     private Construct parentScope = null;
+
+    private List<CfnComponent> components  = null;
+
+    private Map<String, String> parameters = null;
 
     public ComponentHelper (Construct parentScope) {
         this(parentScope, COMPONENT_RESOURCE_PATH_TEMPLATE);
@@ -45,29 +50,31 @@ public class ComponentHelper {
     }
 
     public List<CfnComponent> getComponents(Construct scope) {
-        List<CfnComponent> components = new ArrayList<CfnComponent>();
-        try {
-            File[] componentResourcePathFiles = Paths.get(ComponentHelper.class.getResource(this.componentResourcePath).toURI()).toFile().listFiles();
-            if (componentResourcePathFiles != null) {
-                for (int i = 0; i < componentResourcePathFiles.length; i++) {
-                    File componentResourcePathFile = componentResourcePathFiles[i];
+        if (this.components == null) {
+            try {
+                this.components = new ArrayList<CfnComponent>();
+                File[] componentResourcePathFiles = Paths.get(ComponentHelper.class.getResource(this.componentResourcePath).toURI()).toFile().listFiles();
+                if (componentResourcePathFiles != null) {
+                    for (int i = 0; i < componentResourcePathFiles.length; i++) {
+                        File componentResourcePathFile = componentResourcePathFiles[i];
 
-                    if (!isYamlFile(componentResourcePathFile)) {
-                        continue;
+                        if (!isYamlFile(componentResourcePathFile)) {
+                            continue;
+                        }
+                        CfnComponent newComponent = CfnComponent.Builder.create(scope, getLogicalName(componentResourcePathFile))
+                            .name(getName(componentResourcePathFile))
+                            .description(getDescription(componentResourcePathFile))
+                            .platform(getComponentPlatform())
+                            .data(getData(componentResourcePathFile))
+                            .version(getComponentVersion())
+                            .build();
+                        components.add(newComponent);
                     }
-
-                    components.add(CfnComponent.Builder.create(scope, getLogicalName(componentResourcePathFile))
-                        .name(getName(componentResourcePathFile))
-                        .description(getDescription(componentResourcePathFile))
-                        .platform(getComponentPlatform())
-                        .data(getData(componentResourcePathFile))
-                        .version(getComponentVersion())
-                        .build());
                 }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                //TODO Fix error handling
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            //TODO Fix error handling
         }
         return components;
     }
@@ -76,10 +83,11 @@ public class ComponentHelper {
         List<CfnImageRecipe.ComponentConfigurationProperty> componentConfigs = new ArrayList<CfnImageRecipe.ComponentConfigurationProperty>();
         List<CfnComponent> components = getComponents(scope);
         for (CfnComponent component : components) {
-            componentConfigs.add(CfnImageRecipe.ComponentConfigurationProperty
+            CfnImageRecipe.ComponentConfigurationProperty compConfigProp = CfnImageRecipe.ComponentConfigurationProperty
                 .builder()
                 .componentArn(component.getAttrArn())
-                .build());
+                .build();
+            componentConfigs.add(compConfigProp);
         }
         return componentConfigs;
     }
@@ -90,12 +98,28 @@ public class ComponentHelper {
     }
 
     private String getData(File componentYaml) throws IOException {
-        return new String(
+        return substituteParameters(new String(
             Files.readAllBytes(
                 Paths.get(
                     componentYaml.toURI())),
                     StandardCharsets.UTF_8
-        );
+        ));
+    }
+
+    private String substituteParameters(String unsubstituted) {
+        String substituted = new String(unsubstituted);
+        for (String parameter : getParamters().keySet()) {
+            substituted = substituted.replace(String.format("${{%s}}", parameter), getParamters().get(parameter));
+        }
+        return substituted;
+    }
+
+    public Map<String, String> getParamters() {
+        return this.parameters;
+    }
+
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
     }
 
     private String getDescription(File componentYaml) {
@@ -113,25 +137,6 @@ public class ComponentHelper {
 
         return file.getName().substring(0, file.getName().indexOf("."));
     }
-
-    // protected String convertDashToCamel(String dashedString) {
-    //     if(dashedString == null) {
-    //         throw new IllegalArgumentException("dashedString cannot be null");
-    //     }
-    //     CaseUtils.toCamelCase(dashedString, false, '-');
-    //     String[] tokens = dashedString.split("-");
-
-    //     StringBuffer sb = new StringBuffer("");
-
-    //     for (int i = 0; i < tokens.length; i++) {
-    //         if (i == 0) {
-    //             sb.append(tokens[i]);
-    //         } else {
-    //             sb.append(tokens[i].toUpperCase());
-    //         }
-    //     }
-    //     return sb.toString();
-    // }
 
     private String getLogicalName(File file) {
         if (file == null) {

@@ -1,6 +1,16 @@
 name: GethNodeProvisioner
 description: Provisions a geth node.
 schemaVersion: 1.0
+# parameters:
+#   - SCRIPTS_S3_URL:
+#       type: string
+#       description: The S3 URL for the scripts asset.
+#   - SCRIPTS_S3_BUCKET_NAME:
+#       type: string
+#       description: The S3 bucket for the scripts asset.
+#   - SCRIPTS_S3_OBJECT_KEY:
+#       type: string
+#       description: The S3 object key for the scripts asset.
 phases:
   - name: 'build'
     steps:
@@ -26,3 +36,15 @@ phases:
             curl -L https://gethstore.blob.core.windows.net/builds/$ARCHIVE_NAME --output /tmp/$ARCHIVE_NAME
             sudo tar -xvf /tmp/$ARCHIVE_NAME
             sudo mv ./$BINARY_NAME/geth /usr/local/bin/geth
+      - name: InstallScripts
+        action: ExecuteBash
+        onFailure: Abort
+        timeoutSeconds: 30
+        maxAttempts: 1
+        inputs:
+          commands:
+          - |
+            SCRIPTS_S3_URL=${{SCRIPTS_S3_URL}}
+            SCRIPTS_S3_BUCKET_NAME=${{SCRIPTS_S3_BUCKET_NAME}}
+            SCRIPTS_S3_OBJECT_KEY=${{SCRIPTS_S3_OBJECT_KEY}}
+            aws s3 cp $SCRIPTS_S3_URL /tmp/${SCRIPTS_S3_OBJECT_KEY}
