@@ -22,6 +22,14 @@ phases:
         inputs:
           commands:
             - sudo useradd --no-create-home --shell /bin/false goeth
+      - name: InstallDependencies
+        action: ExecuteBash
+        onFailure: Abort
+        timeoutSeconds: 30
+        maxAttempts: 1
+        inputs:
+          commands:
+          - sudo yum install cpanminus -y
       - name: InstallBinaries
         action: ExecuteBash
         onFailure: Abort
