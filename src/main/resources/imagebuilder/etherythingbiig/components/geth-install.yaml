@@ -45,6 +45,20 @@ phases:
           commands:
           - |
             SCRIPTS_S3_URL=${{SCRIPTS_S3_URL}}
-            SCRIPTS_S3_BUCKET_NAME=${{SCRIPTS_S3_BUCKET_NAME}}
-            SCRIPTS_S3_OBJECT_KEY=${{SCRIPTS_S3_OBJECT_KEY}}
-            aws s3 cp $SCRIPTS_S3_URL /tmp/${SCRIPTS_S3_OBJECT_KEY}
+            UNITS_S3_URL=${{UNITS_S3_URL}}
+            aws s3 cp $SCRIPTS_S3_URL /tmp/scripts.zip
+            aws s3 cp $UNITS_S3_URL /tmp/scripts.zip
+            sudo unzip /tmp/scripts.zip -d /usr/local/bin
+      - name: InstallServices
+        action: ExecuteBash
+        onFailure: Abort
+        timeoutSeconds: 30
+        maxAttempts: 1
+        inputs:
+          commands:
+          - |
+            UNITS_S3_URL=${{UNITS_S3_URL}}
+            aws s3 cp $UNITS_S3_URL /tmp/units.zip
+            sudo unzip /tmp/units.zip -d /etc/systemd/system
+            sudo systemctl daemon-reload
+            

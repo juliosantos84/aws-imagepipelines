@@ -18,8 +18,6 @@ public class EtherythingbiigImagePipeline extends ImagePipelineBase {
 
     public EtherythingbiigImagePipeline(final Construct scope, final String id, StackProps props) {
         super(scope, id, props);
-        // getScriptsAsset();
-        getUnitsAsset();
     }
 
     protected String getAmiName() {
@@ -66,8 +64,7 @@ public class EtherythingbiigImagePipeline extends ImagePipelineBase {
         componentHelper.setParameters(new HashMap<String, String>(){
             {
                 put("SCRIPTS_S3_URL", getScriptsAsset().getS3ObjectUrl());
-                put("SCRIPTS_S3_BUCKET_NAME", getScriptsAsset().getS3BucketName());
-                put("SCRIPTS_S3_OBJECT_KEY", getScriptsAsset().getS3ObjectKey());
+                put("UNITS_S3_URL", getUnitsAsset().getS3ObjectUrl());
             }
         });
         return componentHelper;
