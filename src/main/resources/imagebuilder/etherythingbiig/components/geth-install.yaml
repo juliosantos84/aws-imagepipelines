@@ -45,9 +45,7 @@ phases:
           commands:
           - |
             SCRIPTS_S3_URL=${{SCRIPTS_S3_URL}}
-            UNITS_S3_URL=${{UNITS_S3_URL}}
             aws s3 cp $SCRIPTS_S3_URL /tmp/scripts.zip
-            aws s3 cp $UNITS_S3_URL /tmp/scripts.zip
             sudo unzip /tmp/scripts.zip -d /usr/local/bin
       - name: InstallServices
         action: ExecuteBash
