@@ -1,13 +1,15 @@
 package com.everythingbiig.aws.imagepipelines;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.StackProps;
+import software.amazon.awscdk.services.ec2.LookupMachineImage;
 import software.amazon.awscdk.services.s3.assets.Asset;
 
-public class EtherythingbiigImagePipeline extends ImagePipelineBase {
+public class EtherythingbiigImagePipeline extends AbstractImagePipeline {
 
     private Asset scriptsAsset = null;
     private Asset unitsAsset = null;
@@ -20,17 +22,19 @@ public class EtherythingbiigImagePipeline extends ImagePipelineBase {
         super(scope, id, props);
     }
 
+    @Override
     protected String getAmiName() {
         return (String) super.getNode()
             .tryGetContext("everythingbiig-aws-imagepipelines/etherythingbiig:amiName");
     }
 
-
+    @Override
     protected String getRecipeVersion() {
         return (String) super.getNode()
             .tryGetContext("everythingbiig-aws-imagepipelines/etherythingbiig:recipeVersion");
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     protected List<String> getDistributionRegions() {
         return (List<String>) super.getNode()
@@ -56,6 +60,26 @@ public class EtherythingbiigImagePipeline extends ImagePipelineBase {
             this.unitsAsset.grantRead(getImageBuilderRoleArn());
         }
         return this.unitsAsset;
+    }
+
+    /**
+     * aws ec2 describe-images 
+     * --owners 099720109477 
+     * --filters "Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20211015"
+     */
+    @Override
+    protected String getParentImage() {
+        return LookupMachineImage.Builder.create()
+            .owners(Arrays.asList("099720109477"))
+            .filters(new HashMap<String,List<String>>() {
+                {
+                    put("name", Arrays.asList("ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20211015"));
+                }
+            })
+            .name("ubuntuFocal2004Lookup")
+            .build()
+                .getImage(this)
+                    .getImageId();
     }
 
     @Override

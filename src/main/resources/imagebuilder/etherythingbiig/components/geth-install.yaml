@@ -14,6 +14,34 @@ schemaVersion: 1.0
 phases:
   - name: 'build'
     steps:
+      - name: InstallCfnBootstrap
+        action: ExecuteBash
+        onFailure: Abort
+        timeoutSeconds: 60
+        maxAttempts: 1
+        inputs:
+          commands:
+            - |
+              AWS_ROOT=/opt/aws
+              sudo mkdir -p ${AWS_ROOT}
+              sudo chown -R ubuntu:users ${AWS_ROOT}
+              curl https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-py3-latest.tar.gz --output /tmp/aws-cfn-bootstrap-py3-latest.tar.gz
+              tar -xvf /tmp/aws-cfn-bootstrap-py3-latest.tar.gz -C /tmp/
+              mv /tmp/aws-cfn-bootstrap-2.0/* ${AWS_ROOT}
+              # I hate this, but couldn't pass the right params to the install script
+              cd ${AWS_ROOT}
+              sudo python3 ${AWS_ROOT}/setup.py install --prefix ${AWS_ROOT} --install-lib /usr/lib/python3.8
+              sudo chmod +x ${AWS_ROOT}/bin/*
+              sudo ln -s ${AWS_ROOT}/bin/cfn-hup /etc/init.d/cfn-hup
+      - name: InstallUtils
+        action: ExecuteBash
+        onFailure: Abort
+        timeoutSeconds: 60
+        maxAttempts: 1
+        inputs:
+          commands:
+            - sudo apt update
+            - sudo apt install awscli jq unzip -y
       - name: CreateUsers
         action: ExecuteBash
         onFailure: Abort
@@ -22,14 +50,6 @@ phases:
         inputs:
           commands:
             - sudo useradd --no-create-home --shell /bin/false goeth
-      - name: InstallDependencies
-        action: ExecuteBash
-        onFailure: Abort
-        timeoutSeconds: 30
-        maxAttempts: 1
-        inputs:
-          commands:
-          - sudo yum install cpanminus -y
       - name: InstallBinaries
         action: ExecuteBash
         onFailure: Abort
@@ -55,6 +75,8 @@ phases:
             SCRIPTS_S3_URL=${{SCRIPTS_S3_URL}}
             aws s3 cp $SCRIPTS_S3_URL /tmp/scripts.zip
             sudo unzip /tmp/scripts.zip -d /usr/local/bin
+            sudo chown goeth:goeth /usr/local/bin/*-goeth-volume.sh
+            sudo chmod 755 /usr/local/bin/*-goeth-volume.sh
       - name: InstallServices
         action: ExecuteBash
         onFailure: Abort

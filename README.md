@@ -14,4 +14,4 @@ A pipeline to build the etherythingbiig image which includes:
 - lighthouse (beacon + validator)
 
 ## New Pipelines
-Copy `EtherythingbiigImagePipeline` and add components in `src/main/resources/imagebuilder/pipelinename`.
+Extend `AbstractImagePipeline` and add components in `src/main/resources/imagebuilder/<pipeline name>`.

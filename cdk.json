@@ -13,6 +13,8 @@
     "@aws-cdk/aws-rds:lowercaseDbIdentifier": true,
     "@aws-cdk/aws-efs:defaultEncryptionAtRest": true,
     "@aws-cdk/aws-lambda:recognizeVersionProps": true,
+    "everythingbiig-aws-imagepipelines/parentImageNames": ["amzn2-ami-hvm-2.0.20211001.1-x86_64-ebs"],
+    "everythingbiig-aws-imagepipelines/parentImageOwners": ["amazon"],
     "everythingbiig-aws-imagepipelines/etherythingbiig:amiName": "etherythingbiig-{{imagebuilder:buildVersion}}-{{imagebuilder:buildDate}}",
     "everythingbiig-aws-imagepipelines/etherythingbiig:recipeVersion": "0.0.1",
     "everythingbiig-aws-imagepipelines/etherythingbiig:componentPlatform": "Linux",

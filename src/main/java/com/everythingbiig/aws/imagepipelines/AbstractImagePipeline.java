@@ -4,7 +4,6 @@ import java.io.File;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,16 +26,16 @@ import software.amazon.awscdk.services.s3.assets.Asset;
  * Provisions and tests the etherythingbiig AMI used to run
  * a self-contained beacon chain node.
  */
-public abstract class ImagePipelineBase extends Stack {
+public abstract class AbstractImagePipeline extends Stack {
 
     private CfnImagePipeline pipeline = null;
     private IRole imageBuilderRole = null;
 
-    public ImagePipelineBase(final Construct scope, final String id) {
+    public AbstractImagePipeline(final Construct scope, final String id) {
         this(scope, id, null);
     }
 
-    public ImagePipelineBase(final Construct scope, final String id, StackProps props) {
+    public AbstractImagePipeline(final Construct scope, final String id, StackProps props) {
         super(scope, id, props);
         getImagePipeline();
     }
@@ -48,14 +47,18 @@ public abstract class ImagePipelineBase extends Stack {
      * @return
      */
     protected String getParentImage() {
+        List<String> parentImageNames = (List<String>) getNode()
+            .tryGetContext("everythingbiig-aws-imagepipelines/parentImageNames");
+        List<String> parentImageOwners = (List<String>) getNode()
+            .tryGetContext("everythingbiig-aws-imagepipelines/parentImageOwners");
         return LookupMachineImage.Builder.create()
-            .owners(Arrays.asList("amazon"))
+            .owners(parentImageOwners)
             .filters(new HashMap<String,List<String>>() {
                 {
-                    put("name", Arrays.asList("amzn2-ami-hvm-2.0.20211001.1-x86_64-ebs"));
+                    put("name", parentImageNames);
                 }
             })
-            .name("amazonLinux2AmiLookup")
+            .name("defaultParentImageLookup")
             .build()
                 .getImage(this)
                     .getImageId();
@@ -69,7 +72,9 @@ public abstract class ImagePipelineBase extends Stack {
 
     protected abstract String getPipelineName();
 
-    protected abstract ComponentHelper getComponentHelper();
+    protected ComponentHelper getComponentHelper(){
+        return new ComponentHelper(this, "/imagebuilder/default/components");
+    }
 
     protected List<DistributionProperty> getDistributionPropertyList() {
         List<DistributionProperty> distroProps = new ArrayList<DistributionProperty>();
@@ -82,7 +87,7 @@ public abstract class ImagePipelineBase extends Stack {
                 DistributionProperty.builder()
                     .amiDistributionConfiguration(new HashMap<String, Object>(){
                         {
-                            put("name", ImagePipelineBase.this.getAmiName());
+                            put("name", AbstractImagePipeline.this.getAmiName());
                         }
                     })
                     .region(distroRegion)
@@ -142,7 +147,7 @@ public abstract class ImagePipelineBase extends Stack {
     protected Asset getAsset(String assetId, String localAssetPath) {
         Asset asset = null;
         try {
-            File filePath = Paths.get(ImagePipelineBase.class.getResource(localAssetPath).toURI())
+            File filePath = Paths.get(AbstractImagePipeline.class.getResource(localAssetPath).toURI())
                 .toFile();
             asset = Asset.Builder.create(this, assetId)
                 .path(filePath.toString())
