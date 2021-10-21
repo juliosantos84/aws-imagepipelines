@@ -1,10 +1,10 @@
-name: GethNodeProvisionerTest
-description: Tests provisioning of a geth node.
+name: EtherythingbiigNodeProvisionerTest
+description: Tests provisioning of a etherythingbiig node.
 schemaVersion: 1.0
 phases:
     - name: 'test'
       steps:
-        - name: ValidateGeth
+        - name: ValidateGethInstall
           action: ExecuteBash
           onFailure: Abort
           timeoutSeconds: 30

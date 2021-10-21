@@ -12,7 +12,7 @@ import software.amazon.awscdk.services.s3.assets.Asset;
 public class EtherythingbiigImagePipeline extends AbstractImagePipeline {
 
     private Asset scriptsAsset = null;
-    private Asset unitsAsset = null;
+    private Asset servicesAsset = null;
 
     public EtherythingbiigImagePipeline(final Construct scope, final String id) {
         this(scope, id, null);
@@ -54,12 +54,12 @@ public class EtherythingbiigImagePipeline extends AbstractImagePipeline {
         return this.scriptsAsset;
     }
 
-    protected Asset getUnitsAsset() {
-        if (this.unitsAsset == null) {
-            this.unitsAsset = getAsset("unitsAsset", "/assets/etherythingbiig/units");
-            this.unitsAsset.grantRead(getImageBuilderRoleArn());
+    protected Asset getServicesAsset() {
+        if (this.servicesAsset == null) {
+            this.servicesAsset = getAsset("servicesAsset", "/assets/etherythingbiig/services");
+            this.servicesAsset.grantRead(getImageBuilderRoleArn());
         }
-        return this.unitsAsset;
+        return this.servicesAsset;
     }
 
     /**
@@ -88,7 +88,7 @@ public class EtherythingbiigImagePipeline extends AbstractImagePipeline {
         componentHelper.setParameters(new HashMap<String, String>(){
             {
                 put("SCRIPTS_S3_URL", getScriptsAsset().getS3ObjectUrl());
-                put("UNITS_S3_URL", getUnitsAsset().getS3ObjectUrl());
+                put("SERVICES_S3_URL", getServicesAsset().getS3ObjectUrl());
             }
         });
         return componentHelper;

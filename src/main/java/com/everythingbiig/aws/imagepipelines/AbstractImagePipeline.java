@@ -97,7 +97,7 @@ public abstract class AbstractImagePipeline extends Stack {
         return distroProps;
     }
 
-    protected String getScopePrefixedId(String id) {
+    protected String getScopedId(String id) {
         return CaseUtils.toCamelCase(String.format("%s-%s",this.getPipelineName(), id), false, '-');
     }
 
@@ -106,8 +106,8 @@ public abstract class AbstractImagePipeline extends Stack {
         if (pipeline == null) {
 
             CfnDistributionConfiguration distroConfig = CfnDistributionConfiguration.Builder
-                .create(this, getScopePrefixedId("distroConfig"))
-                .name(getScopePrefixedId("distroConfig"))
+                .create(this, getScopedId("DistroConfig"))
+                .name(getScopedId("DistroConfig"))
                 .description("Distribution Config.")
                 .distributions(getDistributionPropertyList())
                 .build();
@@ -115,7 +115,7 @@ public abstract class AbstractImagePipeline extends Stack {
             ComponentHelper componentHelper = getComponentHelper();
 
             CfnImageRecipe recipe = CfnImageRecipe.Builder.create(this, "imageRecipe")
-                .name(getScopePrefixedId("imageRecipe"))
+                .name(getScopedId("ImageRecipe"))
                 // amzn2-ami-hvm-2.0.20211001.1-x86_64-ebs
                 .parentImage(getParentImage())
                 .description("Image Recipe")
@@ -125,16 +125,16 @@ public abstract class AbstractImagePipeline extends Stack {
                 .build();
 
             CfnInfrastructureConfiguration infraConfig = 
-                CfnInfrastructureConfiguration.Builder.create(this, getScopePrefixedId("infraConfig"))
-                    .name(getScopePrefixedId("infraConfig"))
+                CfnInfrastructureConfiguration.Builder.create(this, getScopedId("InfraConfig"))
+                    .name(getScopedId("InfraConfig"))
                     .description("Infrastructure Config")
                     .terminateInstanceOnFailure(Boolean.TRUE)
                     .instanceProfileName("EC2InstanceProfileForImageBuilder")
                     .build();
 
             pipeline = CfnImagePipeline.Builder
-                .create(this, getScopePrefixedId("imagePipeline"))
-                .name(getScopePrefixedId("imagePipeline"))
+                .create(this, getScopedId("ImagePipeline"))
+                .name(getScopedId("ImagePipeline"))
                 .description("Image Pipeline")
                 .distributionConfigurationArn(distroConfig.getAttrArn())
                 .imageRecipeArn(recipe.getAttrArn())
@@ -162,7 +162,7 @@ public abstract class AbstractImagePipeline extends Stack {
 
     protected IRole getImageBuilderRoleArn() {
         if(this.imageBuilderRole == null) {
-            this.imageBuilderRole = Role.fromRoleArn(this, getScopePrefixedId("imageBuilderRoleArn"), String.format("arn:aws:iam::%s:role/EC2InstanceProfileForImageBuilder", this.getAccount()));
+            this.imageBuilderRole = Role.fromRoleArn(this, getScopedId("ImageBuilderRoleArn"), String.format("arn:aws:iam::%s:role/EC2InstanceProfileForImageBuilder", this.getAccount()));
         }
         return this.imageBuilderRole;
     }

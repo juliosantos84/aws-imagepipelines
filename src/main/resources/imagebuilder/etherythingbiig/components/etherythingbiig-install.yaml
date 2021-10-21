@@ -1,5 +1,5 @@
-name: GethNodeProvisioner
-description: Provisions a geth node.
+name: EtherythingbiigNodeProvisioner
+description: Provisions an etherythingbiig node.
 schemaVersion: 1.0
 # parameters:
 #   - SCRIPTS_S3_URL:
@@ -33,7 +33,7 @@ phases:
               sudo python3 ${AWS_ROOT}/setup.py install --prefix ${AWS_ROOT} --install-lib /usr/lib/python3.8
               sudo chmod +x ${AWS_ROOT}/bin/*
               sudo ln -s ${AWS_ROOT}/bin/cfn-hup /etc/init.d/cfn-hup
-      - name: InstallUtils
+      - name: InstallCommonUtils
         action: ExecuteBash
         onFailure: Abort
         timeoutSeconds: 60
@@ -42,7 +42,7 @@ phases:
           commands:
             - sudo apt update
             - sudo apt install awscli jq unzip -y
-      - name: CreateUsers
+      - name: CreateGethUsers
         action: ExecuteBash
         onFailure: Abort
         timeoutSeconds: 30
@@ -50,7 +50,7 @@ phases:
         inputs:
           commands:
             - sudo useradd --no-create-home --shell /bin/false goeth
-      - name: InstallBinaries
+      - name: InstallGethBinaries
         action: ExecuteBash
         onFailure: Abort
         timeoutSeconds: 30
@@ -64,7 +64,7 @@ phases:
             curl -L https://gethstore.blob.core.windows.net/builds/$ARCHIVE_NAME --output /tmp/$ARCHIVE_NAME
             sudo tar -xvf /tmp/$ARCHIVE_NAME
             sudo mv ./$BINARY_NAME/geth /usr/local/bin/geth
-      - name: InstallScripts
+      - name: InstallGethScripts
         action: ExecuteBash
         onFailure: Abort
         timeoutSeconds: 30
@@ -77,7 +77,7 @@ phases:
             sudo unzip /tmp/scripts.zip -d /usr/local/bin
             sudo chown goeth:goeth /usr/local/bin/*-goeth-volume.sh
             sudo chmod 755 /usr/local/bin/*-goeth-volume.sh
-      - name: InstallServices
+      - name: InstallGethServices
         action: ExecuteBash
         onFailure: Abort
         timeoutSeconds: 30
@@ -85,8 +85,8 @@ phases:
         inputs:
           commands:
           - |
-            UNITS_S3_URL=${{UNITS_S3_URL}}
-            aws s3 cp $UNITS_S3_URL /tmp/units.zip
-            sudo unzip /tmp/units.zip -d /etc/systemd/system
+            SERVICES_S3_URL=${{SERVICES_S3_URL}}
+            aws s3 cp $SERVICES_S3_URL /tmp/services.zip
+            sudo unzip /tmp/services.zip -d /etc/systemd/system
             sudo systemctl daemon-reload
             
