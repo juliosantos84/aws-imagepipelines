@@ -1,16 +1,19 @@
 name: EtherythingbiigNodeProvisioner
 description: Provisions an etherythingbiig node.
 schemaVersion: 1.0
-# parameters:
-#   - SCRIPTS_S3_URL:
-#       type: string
-#       description: The S3 URL for the scripts asset.
-#   - SCRIPTS_S3_BUCKET_NAME:
-#       type: string
-#       description: The S3 bucket for the scripts asset.
-#   - SCRIPTS_S3_OBJECT_KEY:
-#       type: string
-#       description: The S3 object key for the scripts asset.
+parameters:
+  - SCRIPTS_S3_URL:
+      type: string
+      default: "${{SCRIPTS_S3_URL}}"
+      description: The S3 URL for the scripts asset.
+  - SERVICES_S3_URL:
+      type: string
+      default: "${{SERVICES_S3_URL}}"
+      description: The S3 URL for the services asset.
+  - GETH_VERSION:
+      type: string
+      default: "1.10.8-26675454"
+      description: The geth version to install.
 phases:
   - name: 'build'
     steps:
@@ -58,8 +61,7 @@ phases:
         inputs:
           commands:
           - |
-            GETH_VERSION=1.10.8-26675454
-            BINARY_NAME=geth-linux-amd64-$GETH_VERSION
+            BINARY_NAME=geth-linux-amd64-{{GETH_VERSION}}
             ARCHIVE_NAME=$BINARY_NAME.tar.gz
             curl -L https://gethstore.blob.core.windows.net/builds/$ARCHIVE_NAME --output /tmp/$ARCHIVE_NAME
             sudo tar -xvf /tmp/$ARCHIVE_NAME
@@ -72,8 +74,7 @@ phases:
         inputs:
           commands:
           - |
-            SCRIPTS_S3_URL=${{SCRIPTS_S3_URL}}
-            aws s3 cp $SCRIPTS_S3_URL /tmp/scripts.zip
+            aws s3 cp {{SCRIPTS_S3_URL}} /tmp/scripts.zip
             sudo unzip /tmp/scripts.zip -d /usr/local/bin
             sudo chown goeth:goeth /usr/local/bin/*-goeth-volume.sh
             sudo chmod 755 /usr/local/bin/*-goeth-volume.sh
@@ -85,8 +86,7 @@ phases:
         inputs:
           commands:
           - |
-            SERVICES_S3_URL=${{SERVICES_S3_URL}}
-            aws s3 cp $SERVICES_S3_URL /tmp/services.zip
+            aws s3 cp {{SERVICES_S3_URL}} /tmp/services.zip
             sudo unzip /tmp/services.zip -d /etc/systemd/system
             sudo systemctl daemon-reload
             
