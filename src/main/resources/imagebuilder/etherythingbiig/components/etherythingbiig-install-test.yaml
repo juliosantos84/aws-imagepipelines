@@ -1,6 +1,15 @@
 name: EtherythingbiigNodeProvisionerTest
 description: Tests provisioning of a etherythingbiig node.
 schemaVersion: 1.0
+parameters:
+  - GETH_VERSION:
+      type: string
+      default: "${{GETH_VERSION}}"
+      description: The geth version to install.
+  - LIGHTHOUSE_VERSION:
+      type: string
+      default: "${{LIGHTHOUSE_VERSION}}"
+      description: The lighthouse version to install.
 phases:
     - name: 'test'
       steps:
@@ -12,5 +21,16 @@ phases:
           inputs:
             commands:
               - 'id -u goeth && echo "goeth user is installed"'
-              - '[ -f /usr/local/bin/geth ] && echo "Geth is installed"'
-              - 'geth version | grep Version | grep 1.10.8-stable'
+              - '[ -x /usr/local/bin/geth ] && echo "Geth is installed"'
+              - 'geth version | grep Version | grep {{GETH_VERSION}}-stable'
+        - name: ValidateLighthouseInstall
+          action: ExecuteBash
+          onFailure: Abort
+          timeoutSeconds: 30
+          maxAttempts: 1
+          inputs:
+            commands:
+              - 'id -u lighthousebeacon && echo "lighthousebeacon user is installed"'
+              - 'id -u lighthousevalidator && echo "lighthousevalidator user is installed"'
+              - '[ -x /usr/local/bin/lighthouse ] && echo "Lighthouse is installed"'
+              - 'lighthouse --version | grep {{LIGHTHOUSE_VERSION}}'
