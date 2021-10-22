@@ -12,8 +12,12 @@ parameters:
       description: The S3 URL for the services asset.
   - GETH_VERSION:
       type: string
-      default: "1.10.8-26675454"
+      default: "${{GETH_VERSION}}"
       description: The geth version to install.
+  - LIGHTHOUSE_VERSION:
+      type: string
+      default: "${{LIGHTHOUSE_VERSION}}"
+      description: The lighthouse version to install.
 phases:
   - name: 'build'
     steps:
@@ -66,7 +70,7 @@ phases:
             curl -L https://gethstore.blob.core.windows.net/builds/$ARCHIVE_NAME --output /tmp/$ARCHIVE_NAME
             sudo tar -xvf /tmp/$ARCHIVE_NAME
             sudo mv ./$BINARY_NAME/geth /usr/local/bin/geth
-      - name: InstallGethScripts
+      - name: InstallScripts
         action: ExecuteBash
         onFailure: Abort
         timeoutSeconds: 30
@@ -78,7 +82,7 @@ phases:
             sudo unzip /tmp/scripts.zip -d /usr/local/bin
             sudo chown goeth:goeth /usr/local/bin/*-goeth-volume.sh
             sudo chmod 755 /usr/local/bin/*-goeth-volume.sh
-      - name: InstallGethServices
+      - name: InstallServices
         action: ExecuteBash
         onFailure: Abort
         timeoutSeconds: 30
@@ -89,4 +93,27 @@ phases:
             aws s3 cp {{SERVICES_S3_URL}} /tmp/services.zip
             sudo unzip /tmp/services.zip -d /etc/systemd/system
             sudo systemctl daemon-reload
-            
+      - name: CreateLighthouseUsers
+        action: ExecuteBash
+        onFailure: Abort
+        timeoutSeconds: 30
+        maxAttempts: 1
+        inputs:
+          commands:
+          - sudo useradd --no-create-home --shell /bin/false lighthousebeacon
+          - sudo useradd --no-create-home --shell /bin/false lighthousevalidator
+      - name: InstallLighthouseBinaries
+        action: ExecuteBash
+        onFailure: Abort
+        timeoutSeconds: 30
+        maxAttempts: 1
+        inputs:
+          commands:
+          - |
+            LIGHTHOUSE_ARCHIVE=lighthouse-{{LIGHTHOUSE_VERSION}}-x86_64-unknown-linux-gnu.tar.gz
+            LIGHTHOUSE_DOWNLOAD_URL=https://github.com/sigp/lighthouse/releases/download/${LIGHTHOUSE_VERSION}/${LIGHTHOUSE_ARCHIVE}
+            DOWNLOAD_DIR=/tmp
+            curl -L ${LIGHTHOUSE_DOWNLOAD_URL} --output ${DOWNLOAD_DIR}/${LIGHTHOUSE_ARCHIVE}
+            tar -xvf ${DOWNLOAD_DIR}/${LIGHTHOUSE_ARCHIVE}
+            sudo mv lighthouse /usr/local/bin/lighthouse
+            sudo chown lighthousebeacon:users /usr/local/bin/lighthouse

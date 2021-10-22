@@ -89,6 +89,9 @@ public class EtherythingbiigImagePipeline extends AbstractImagePipeline {
             {
                 put("SCRIPTS_S3_URL", getScriptsAsset().getS3ObjectUrl());
                 put("SERVICES_S3_URL", getServicesAsset().getS3ObjectUrl());
+                // TODO Get from context
+                put("GETH_VERSION", "1.10.8-26675454");
+                put("LIGHTHOUSE_VERSION", "v1.5.2");
             }
         });
         return componentHelper;

@@ -10,6 +10,7 @@ Group=lighthousebeacon
 Restart=always
 RestartSec=30
 
+EnvironmentFile=-/etc/systemd/system/lighthousebeacon.service.env
 ExecStartPre=/usr/local/bin/attach-volume.sh
 ExecStartPre=+/usr/local/bin/format-volume.sh
 ExecStartPre=+/usr/local/bin/mount-volume.sh
