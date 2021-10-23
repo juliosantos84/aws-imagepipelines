@@ -28,6 +28,7 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
+            - set -x
             - |
               AWS_ROOT=/opt/aws
               sudo mkdir -p ${AWS_ROOT}
@@ -47,6 +48,7 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
+            - set -x
             - sudo apt update
             - sudo apt install awscli jq unzip -y
       - name: CreateGethUsers
@@ -64,6 +66,7 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
+          - set -x
           - |
             BINARY_NAME=geth-linux-amd64-{{GETH_VERSION}}
             ARCHIVE_NAME=$BINARY_NAME.tar.gz
@@ -77,6 +80,7 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
+          - set -x
           - sudo useradd --no-create-home --shell /bin/false lighthousebeacon
           - sudo useradd --no-create-home --shell /bin/false lighthousevalidator
       - name: InstallLighthouseBinaries
@@ -86,6 +90,7 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
+          - set -x
           - |
             LIGHTHOUSE_ARCHIVE=lighthouse-{{LIGHTHOUSE_VERSION}}-x86_64-unknown-linux-gnu.tar.gz
             LIGHTHOUSE_DOWNLOAD_URL=https://github.com/sigp/lighthouse/releases/download/{{LIGHTHOUSE_VERSION}}/${LIGHTHOUSE_ARCHIVE}
@@ -102,6 +107,7 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
+          - set -x
           - aws s3 cp {{SCRIPTS_S3_URL}} /tmp/scripts.zip
           - sudo unzip /tmp/scripts.zip -d /usr/local/bin           
           - sudo chmod 755 /usr/local/bin/*-goeth-volume.sh
@@ -109,7 +115,6 @@ phases:
           - sudo mv /usr/local/bin/general/*.sh /usr/local/bin
           - sudo chown lighthousebeacon:lighthousebeacon /usr/local/bin/*.sh
           - sudo chown goeth:goeth /usr/local/bin/*-goeth-volume.sh
-
       - name: InstallServices
         action: ExecuteBash
         onFailure: Abort
@@ -117,6 +122,7 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
+          - set -x
           - aws s3 cp {{SERVICES_S3_URL}} /tmp/services.zip
           - sudo unzip /tmp/services.zip -d /etc/systemd/system
           - sudo systemctl daemon-reload
