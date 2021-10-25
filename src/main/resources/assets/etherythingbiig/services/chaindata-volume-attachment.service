@@ -1,8 +1,8 @@
 [Unit]
 Description=Ethereum go client volume attachment
-After=network.target 
-Wants=network.target
-Before=geth.service
+# Network dependency
+Requires=network-online.target
+After=network-online.target
 
 [Service]
 User=ubuntu

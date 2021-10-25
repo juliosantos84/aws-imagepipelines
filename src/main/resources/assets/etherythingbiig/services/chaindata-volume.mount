@@ -1,8 +1,10 @@
 [Unit]
 Description=Mount for chaindata volume
-Before=geth.service
-After=network.target
-Wants=network.target
+# Network dependency
+After=network-online.target
+Requires=network-online.target
+# Volume dependency
+After=chaindata-volume-attachment.service
 Requires=chaindata-volume-attachment.service
 
 [Mount]

@@ -1,14 +1,15 @@
 [Unit]
 Description=Ethereum go client
-After=network.target 
-Wants=network.target
+# Network dependency
+After=network-online.target 
+Wants=network-online.target
 
 [Service]
 User=goeth 
 Group=goeth
 Type=simple
 Restart=always
-RestartSec=30
+RestartSec=60
 
 EnvironmentFile=-/etc/systemd/system/geth.service.env
 ExecStartPre=/usr/local/bin/attach-volume.sh

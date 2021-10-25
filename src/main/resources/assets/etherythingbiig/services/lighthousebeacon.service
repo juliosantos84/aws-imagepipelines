@@ -1,7 +1,11 @@
 [Unit]
 Description=Lighthouse Beacon Node Service
-Wants=network-online.target
+# Network dependency
+Requires=network-online.target
 After=network-online.target
+# Geth service dependency
+Requires=geth.service
+After=geth.service
 
 [Service]
 Type=simple

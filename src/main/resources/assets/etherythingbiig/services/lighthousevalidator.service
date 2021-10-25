@@ -1,14 +1,18 @@
 [Unit]
 Description=Lighthouse Validator
-Wants=network-online.target
+# Network dependency
+Requires=network-online.target
 After=network-online.target
+# Lighthouse dependency
+Requires=lighthousebeacon.service
+After=lighthousebeacon.service
 
 [Service]
 Type=simple
 User=lighthousevalidator
 Group=lighthousevalidator
 Restart=always
-RestartSec=5
+RestartSec=15
 
 EnvironmentFile=-/etc/systemd/system/lighthousevalidator.service.env
 
