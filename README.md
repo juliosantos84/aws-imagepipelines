@@ -1,10 +1,10 @@
 # Image Pipeline
 
 # Deploying
-Run `cdk deploy`.
+Run `bin/deploy-pipeline.sh [version]`.
 
 # Configuration
-Edit `everythingbiig-aws-imagepipelines/etherythingbiig:*` in `/cdk.json`.
+Edit `everythingbiig-aws-imagepipelines/etherythingbiig:*` in `/cdk.json` or provide overrides at commandline using the `-c` option.
 
 # Pipelines
 
