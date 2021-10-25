@@ -137,7 +137,7 @@ phases:
           commands:
           - set -x
           - id -u goeth
-          - "[ -x /usr/local/bin/geth ]"
+          - "test -x /usr/local/bin/geth"
           - "geth version | grep Version | grep {{GETH_VERSION}}-stable"
       - name: TestLighthouseInstall
         action: ExecuteBash
@@ -149,5 +149,5 @@ phases:
           - set -x
           - id -u lighthousebeacon
           - id -u lighthousevalidator
-          - "[ -x /usr/local/bin/lighthouse ]"
+          - "test -x /usr/local/bin/lighthouse"
           - "lighthouse --version | grep {{LIGHTHOUSE_VERSION}}"
