@@ -126,3 +126,28 @@ phases:
           - aws s3 cp {{SERVICES_S3_URL}} /tmp/services.zip
           - sudo unzip /tmp/services.zip -d /etc/systemd/system
           - sudo systemctl daemon-reload
+  - name: 'test'
+    steps:
+      - name: TestGethInstall
+        action: ExecuteBash
+        onFailure: Abort
+        timeoutSeconds: 30
+        maxAttempts: 1
+        inputs:
+          commands:
+          - set -x
+          - id -u goeth
+          - "[ -x /usr/local/bin/geth ]"
+          - "geth version | grep Version | grep {{GETH_VERSION}}-stable"
+      - name: TestLighthouseInstall
+        action: ExecuteBash
+        onFailure: Abort
+        timeoutSeconds: 30
+        maxAttempts: 1
+        inputs:
+          commands:
+          - set -x
+          - id -u lighthousebeacon
+          - id -u lighthousevalidator
+          - "[ -x /usr/local/bin/lighthouse ]"
+          - "lighthouse --version | grep {{LIGHTHOUSE_VERSION}}"

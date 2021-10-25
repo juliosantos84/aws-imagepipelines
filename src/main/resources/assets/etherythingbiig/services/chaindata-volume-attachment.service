@@ -1,0 +1,20 @@
+[Unit]
+Description=Ethereum go client volume attachment
+After=network.target 
+Wants=network.target
+Before=geth.service
+
+[Service]
+User=ubuntu
+Group=ubuntu
+Type=oneshot
+
+ExecStart=/usr/local/bin/attach-volume.sh
+ExecStart=+/usr/local/bin/format-volume.sh
+
+ExecStop=-+/usr/local/bin/detach-volume.sh
+
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target

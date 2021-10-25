@@ -1,0 +1,14 @@
+[Unit]
+Description=Mount for chaindata volume
+Before=geth.service
+After=network.target
+Wants=network.target
+Requires=chaindata-volume-attachment.service
+
+[Mount]
+What=/dev/nvme1n1
+Where=/var/lib/chaindata
+LazyUnmount=yes
+
+[Install]
+WantedBy=multi-user.target

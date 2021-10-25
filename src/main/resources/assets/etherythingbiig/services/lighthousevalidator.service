@@ -9,7 +9,10 @@ User=lighthousevalidator
 Group=lighthousevalidator
 Restart=always
 RestartSec=5
+
 EnvironmentFile=-/etc/systemd/system/lighthousevalidator.service.env
-ExecStart=/usr/local/bin/lighthouse validator_client --network pyrmont --datadir /var/lib/lighthouse --graffiti "everythingbiigpyrmont"
+
+ExecStart=/usr/local/bin/lighthouse validator_client --network pyrmont --datadir /var/lib/chaindata/lighthouse --graffiti "everythingbiigpyrmont"
+
 [Install]
 WantedBy=multi-user.target
