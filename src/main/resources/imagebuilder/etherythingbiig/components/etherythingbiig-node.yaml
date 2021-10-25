@@ -135,10 +135,11 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
-          - set -x
-          - id -u goeth
-          - "test -x /usr/local/bin/geth"
-          - "geth version | grep Version | grep {{GETH_VERSION}}-stable"
+          - |
+            set -x
+            id -u goeth
+            test -x /usr/local/bin/geth
+            geth version | grep Version | grep 1.10.8
       - name: TestLighthouseInstall
         action: ExecuteBash
         onFailure: Abort
@@ -146,8 +147,9 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
-          - set -x
-          - id -u lighthousebeacon
-          - id -u lighthousevalidator
-          - "test -x /usr/local/bin/lighthouse"
-          - "lighthouse --version | grep {{LIGHTHOUSE_VERSION}}"
+          - |
+            set -x
+            id -u lighthousebeacon
+            id -u lighthousevalidator
+            test -x /usr/local/bin/lighthouse
+            lighthouse --version | grep {{LIGHTHOUSE_VERSION}}
