@@ -125,6 +125,9 @@ phases:
           - set -x
           - aws s3 cp {{SERVICES_S3_URL}} /tmp/services.zip
           - sudo unzip /tmp/services.zip -d /etc/systemd/system
+          - sudo systemctl enable geth
+          - sudo systemctl enable lighthousebeacon
+          - sudo systemctl enable lighthousevalidator
           - sudo systemctl daemon-reload
   - name: 'test'
     steps:

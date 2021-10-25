@@ -46,6 +46,16 @@ public class EtherythingbiigImagePipeline extends AbstractImagePipeline {
         return "etherythingbiig";
     }
 
+    protected String getGethVersion() {
+        return (String) super.getNode()
+            .tryGetContext("everythingbiig-aws-imagepipelines/etherythingbiig:gethVersion");
+    }
+
+    protected String getLighthouseVersion() {
+        return (String) super.getNode()
+            .tryGetContext("everythingbiig-aws-imagepipelines/etherythingbiig:lighthouseVersion");
+    }
+
     protected Asset getScriptsAsset() {
         if (this.scriptsAsset == null) {
             this.scriptsAsset = getAsset("scriptsAsset", "/assets/etherythingbiig/scripts");
@@ -90,8 +100,8 @@ public class EtherythingbiigImagePipeline extends AbstractImagePipeline {
                 put("SCRIPTS_S3_URL", getScriptsAsset().getS3ObjectUrl());
                 put("SERVICES_S3_URL", getServicesAsset().getS3ObjectUrl());
                 // TODO Get from context
-                put("GETH_VERSION", "1.10.8-26675454");
-                put("LIGHTHOUSE_VERSION", "v1.5.2");
+                put("GETH_VERSION", getGethVersion());
+                put("LIGHTHOUSE_VERSION", getLighthouseVersion());
             }
         });
         return componentHelper;
