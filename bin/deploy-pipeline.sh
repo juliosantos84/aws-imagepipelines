@@ -1,9 +1,15 @@
 #! /bin/bash
 
-NEW_VERSION=$(date +%s%3)
-VERSION=${1:-NEW_VERSION}
+RECIPE_VERSION=""
+COMPONENT_VERSION=""
 
-echo "Deploying pipeline version ${VERSION}"
+if [ ! -z "${1}" ]; then
+    RECIPE_VERSION="-c everythingbiig-aws-imagepipelines/etherythingbiig:recipeVersion=${VERSION}"
+    COMPONENT_VERSION="-c everythingbiig-aws-imagepipelines/etherythingbiig:componentVersion=${VERSION}"
+fi
+
+VERSION=${1:-"from cdk.json"}
+
+echo "Deploying versions ${VERSION}"
 cdk deploy etherythingbiigImagePipeline \
--c everythingbiig-aws-imagepipelines/etherythingbiig:recipeVersion=${VERSION} \
--c everythingbiig-aws-imagepipelines/etherythingbiig:componentVersion=${VERSION}
+--require-approval never ${RECIPE_VERSION} ${COMPONENT_VERSION}
