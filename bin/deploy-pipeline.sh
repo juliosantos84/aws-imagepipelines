@@ -2,8 +2,6 @@
 
 set -e
 
-set -x
-
 RECIPE_VERSION=""
 COMPONENT_VERSION=""
 

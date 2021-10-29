@@ -8,6 +8,8 @@ After=network-online.target
 User=ubuntu
 Group=ubuntu
 Type=oneshot
+Restart=on-failure
+RestartSec=60
 
 ExecStart=/usr/local/bin/attach-volume.sh
 ExecStart=+/usr/local/bin/format-volume.sh
