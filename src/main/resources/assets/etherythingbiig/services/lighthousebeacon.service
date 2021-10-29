@@ -4,7 +4,6 @@ Description=Lighthouse Beacon Node Service
 Requires=network-online.target
 After=network-online.target
 # Geth service dependency
-Requires=geth.service
 After=geth.service
 
 [Service]

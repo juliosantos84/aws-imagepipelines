@@ -4,7 +4,6 @@ Description=Lighthouse Validator
 Requires=network-online.target
 After=network-online.target
 # Lighthouse dependency
-Requires=lighthousebeacon.service
 After=lighthousebeacon.service
 
 [Service]
