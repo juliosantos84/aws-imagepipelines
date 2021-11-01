@@ -61,25 +61,6 @@
           ],
           "metrics_collection_interval": 1
         },
-        "net": {
-          "resources": [
-            "eth0"
-          ],
-          "measurement": [
-            "bytes_sent",
-            "bytes_recv",
-            "drop_in",
-            "drop_out"
-          ]
-        },
-        "netstat": {
-          "measurement": [
-            "tcp_established",
-            "tcp_syn_sent",
-            "tcp_close"
-          ],
-          "metrics_collection_interval": 60
-        },
         "processes": {
           "measurement": [
             "running",
@@ -89,12 +70,10 @@
         }
       },
       "append_dimensions": {
-        "ImageId": "${aws:ImageId}",
         "InstanceId": "${aws:InstanceId}",
-        "InstanceType": "${aws:InstanceType}",
         "AutoScalingGroupName": "${aws:AutoScalingGroupName}"
       },
-      "aggregation_dimensions" : [["ImageId"], ["InstanceId", "InstanceType"], ["d1"],[]],
+      "aggregation_dimensions" : [["AutoScalingGroupName"], ["d1"],[]],
       "force_flush_interval" : 30
     },
     "logs": {
