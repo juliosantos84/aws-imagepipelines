@@ -1,5 +1,7 @@
 package com.everythingbiig.aws.imagepipelines;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -8,11 +10,13 @@ import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.services.ec2.LookupMachineImage;
 import software.amazon.awscdk.services.s3.assets.Asset;
+import software.amazon.awscdk.services.ssm.CfnParameter;
 
 public class EtherythingbiigImagePipeline extends AbstractImagePipeline {
 
     private Asset scriptsAsset = null;
     private Asset servicesAsset = null;
+    private CfnParameter cloudWatchConfig = null;
 
     public EtherythingbiigImagePipeline(final Construct scope, final String id) {
         this(scope, id, null);
@@ -20,6 +24,16 @@ public class EtherythingbiigImagePipeline extends AbstractImagePipeline {
 
     public EtherythingbiigImagePipeline(final Construct scope, final String id, StackProps props) {
         super(scope, id, props);
+        createCloudWatchConfigParameter();
+    }
+
+    private void createCloudWatchConfigParameter() {
+        this.cloudWatchConfig = CfnParameter.Builder.create(this, "cloudWatchConfig")
+            .description("The AWS CloudWatch config.")
+            .name("cloudwatch-config")
+            .type("String")
+            .value(getCloudWatchConfig())
+            .build();
     }
 
     @Override
@@ -90,6 +104,23 @@ public class EtherythingbiigImagePipeline extends AbstractImagePipeline {
             .build()
                 .getImage(this)
                     .getImageId();
+    }
+
+    private String getCloudWatchConfig() {
+        String config = null;
+        try {
+            config = new String(
+                Files.readAllBytes(
+                    Paths.get(
+                        EtherythingbiigImagePipeline.class.getResource("/assets/etherythingbiig/cloudwatch/config.json").toURI()
+                    )
+                )
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+            //TODO handle exception
+        }
+        return config;
     }
 
     @Override

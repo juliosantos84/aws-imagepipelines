@@ -18,6 +18,14 @@ parameters:
       type: string
       default: "${{LIGHTHOUSE_VERSION}}"
       description: The lighthouse version to install.
+  - CLOUDWATCH_URL:
+      type: string
+      default: "https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb"
+      description: The AWS CloudWatch download URL.
+  - CLOUDWATCH_CONFIG_PARAM:
+      type: string
+      default: cloudwatch-config
+      description: The name of the SSM Parameter that stores the CloudWatch config.
 phases:
   - name: 'build'
     steps:
@@ -51,6 +59,19 @@ phases:
             - set -x
             - sudo apt update
             - sudo apt install awscli jq unzip -y
+      - name: InstallCloudWatchAgent
+        action: ExecuteBash
+        onFailure: Abort
+        timeoutSeconds: 30
+        maxAttempts: 1
+        inputs:
+          commands:
+          - |
+            set -x
+            echo "Downloading CloudWatch Agent from {{CLOUDWATCH_URL}}"
+            wget {{CLOUDWATCH_URL}} -O /tmp/amazon-cloudwatch-agent.deb
+            echo "Installing /tmp/amazon-cloudwatch-agent.deb"
+            sudo dpkg -i -E /tmp/amazon-cloudwatch-agent.deb
       - name: CreateGethUsers
         action: ExecuteBash
         onFailure: Abort
@@ -190,6 +211,7 @@ phases:
           - sudo systemctl enable lighthousevalidator
           - sudo systemctl enable prometheus
           - sudo systemctl daemon-reload
+          - sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:{{CLOUDWATCH_CONFIG_PARAM}}
       - name: ConfigureMetadata
         action: ExecuteBash
         onFailure: Abort
