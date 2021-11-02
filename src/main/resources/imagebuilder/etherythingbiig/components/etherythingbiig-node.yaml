@@ -268,3 +268,13 @@ phases:
             set -x
             test "goeth" = "$(cat /home/ubuntu/volume-name-tag)"
             test "/var/lib/chaindata" = "$(cat /home/ubuntu/volume-mount-path)"
+      - name: TestCloudWatchAgentInstall
+        action: ExecuteBash
+        onFailure: Abort
+        timeoutSeconds: 5
+        maxAttempts: 1
+        inputs:
+          commands:
+          - |
+            set -x
+            sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a status
