@@ -13,7 +13,9 @@ RestartSec=60
 
 EnvironmentFile=-/etc/systemd/system/geth.service.env
 
-ExecStart=geth ${GETH_NETWORK} --http --http.addr ${GETH_LISTEN_ADDRESS} --http.api ${GETH_HTTP_APIS} --http.vhosts * --datadir ${GETH_DATA_DIR}
+#ExecStart=geth ${GETH_NETWORK} --http --http.addr ${GETH_LISTEN_ADDRESS} --http.api ${GETH_HTTP_APIS} --http.vhosts * --datadir ${GETH_DATA_DIR}
+ExecStart=geth --goerli --http --http.addr 0.0.0.0 --http.api net,eth,web3 --http.vhosts * --datadir /var/lib/chaindata/goethereum
+
 
 [Install]
 WantedBy=default.target
