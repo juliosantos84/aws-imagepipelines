@@ -16,9 +16,9 @@
     "everythingbiig-aws-imagepipelines/parentImageNames": ["amzn2-ami-hvm-2.0.20211001.1-x86_64-ebs"],
     "everythingbiig-aws-imagepipelines/parentImageOwners": ["amazon"],
     "everythingbiig-aws-imagepipelines/etherythingbiig:amiName": "etherythingbiig-{{imagebuilder:buildDate}}",
-    "everythingbiig-aws-imagepipelines/etherythingbiig:recipeVersion": "1.0.8",
+    "everythingbiig-aws-imagepipelines/etherythingbiig:recipeVersion": "1.1.0",
     "everythingbiig-aws-imagepipelines/etherythingbiig:componentPlatform": "Linux",
-    "everythingbiig-aws-imagepipelines/etherythingbiig:componentVersion": "1.0.8",
+    "everythingbiig-aws-imagepipelines/etherythingbiig:componentVersion": "1.1.0",
     "everythingbiig-aws-imagepipelines/etherythingbiig:distributionRegions": ["us-east-1"],
     "everythingbiig-aws-imagepipelines/etherythingbiig:gethVersion": "1.10.8-26675454",
     "everythingbiig-aws-imagepipelines/etherythingbiig:lighthouseVersion": "v1.5.2"
