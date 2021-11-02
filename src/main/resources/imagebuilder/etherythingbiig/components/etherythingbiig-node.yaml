@@ -268,6 +268,24 @@ phases:
             set -x
             test "goeth" = "$(cat /home/ubuntu/volume-name-tag)"
             test "/var/lib/chaindata" = "$(cat /home/ubuntu/volume-mount-path)"
+      - name: TestServicesInstall
+        action: ExecuteBash
+        onFailure: Abort
+        timeoutSeconds: 5
+        maxAttempts: 1
+        inputs:
+          commands:
+          - |
+            set -x
+            test -f /etc/systemd/system/geth.service
+            test -f /etc/systemd/system/geth/geth.service.testnet.env
+            test -f /etc/systemd/system/geth/geth.service.mainnet.env
+            test -f /etc/systemd/system/lighthousebeacon.service
+            test -f /etc/systemd/system/lighthousebeacon/lighthousebeacon.service.testnet.env
+            test -f /etc/systemd/system/lighthousebeacon/lighthousebeacon.service.mainnet.env
+            test -f /etc/systemd/system/lighthousevalidator.service
+            test -f /etc/systemd/system/lighthousevalidator/lighthousevalidator.service.testnet.env
+            test -f /etc/systemd/system/lighthousevalidator/lighthousevalidator.service.mainnet.env
       - name: TestCloudWatchAgentInstall
         action: ExecuteBash
         onFailure: Abort
