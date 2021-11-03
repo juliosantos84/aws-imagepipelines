@@ -38,8 +38,8 @@ public class EtherythingbiigImagePipeline extends AbstractImagePipeline {
 
     @Override
     protected String getAmiName() {
-        return (String) super.getNode()
-            .tryGetContext("everythingbiig-aws-imagepipelines/etherythingbiig:amiName");
+        return ((String) super.getNode().tryGetContext("everythingbiig-aws-imagepipelines/etherythingbiig:amiName"))
+            .replace("{{etherythingbiig:recipeVersion}}", getRecipeVersion());
     }
 
     @Override
