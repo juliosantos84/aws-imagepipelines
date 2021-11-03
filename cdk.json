@@ -19,7 +19,7 @@
     "everythingbiig-aws-imagepipelines/etherythingbiig:recipeVersion": "0.0.0-replaced-by-mvn-version",
     "everythingbiig-aws-imagepipelines/etherythingbiig:componentPlatform": "Linux",
     "everythingbiig-aws-imagepipelines/etherythingbiig:componentVersion": "0.0.0-replaced-by-mvn-version",
-    "everythingbiig-aws-imagepipelines/etherythingbiig:distributionRegions": ["us-east-1"],
+    "everythingbiig-aws-imagepipelines/etherythingbiig:distributionRegions": ["us-east-1", "us-east-2"],
     "everythingbiig-aws-imagepipelines/etherythingbiig:gethVersion": "1.10.8-26675454",
     "everythingbiig-aws-imagepipelines/etherythingbiig:lighthouseVersion": "v1.5.2"
   }
