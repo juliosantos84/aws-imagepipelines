@@ -1,6 +1,6 @@
 {
     "agent": {
-      "metrics_collection_interval": 10,
+      "metrics_collection_interval": 60,
       "logfile": "/var/log/amazon-cloudwatch-agent.log"
     },
     "metrics": {
@@ -16,12 +16,12 @@
             "cpu_usage_guest"
           ],
           "totalcpu": false,
-          "metrics_collection_interval": 10
+          "metrics_collection_interval": 60
         },
         "disk": {
           "resources": [
             "/",
-            "/tmp"
+            "/var/lib/chaindata"
           ],
           "measurement": [
             {"name": "free", "rename": "DISK_FREE", "unit": "Gigabytes"},
@@ -31,7 +31,7 @@
            "ignore_file_system_types": [
             "sysfs", "devtmpfs"
           ],
-          "metrics_collection_interval": 60
+          "metrics_collection_interval": 300
         },
         "diskio": {
           "resources": [
@@ -51,7 +51,8 @@
             "swap_used",
             "swap_free",
             "swap_used_percent"
-          ]
+          ],
+          "metrics_collection_interval": 60
         },
         "mem": {
           "measurement": [
@@ -59,18 +60,18 @@
             "mem_cached",
             "mem_total"
           ],
-          "metrics_collection_interval": 1
+          "metrics_collection_interval": 60
         },
         "processes": {
           "measurement": [
             "running",
             "sleeping",
             "dead"
-          ]
+          ],
+          "metrics_collection_interval": 60
         }
       },
       "append_dimensions": {
-        "InstanceId": "${aws:InstanceId}",
         "AutoScalingGroupName": "${aws:AutoScalingGroupName}"
       },
       "aggregation_dimensions" : [["AutoScalingGroupName"], ["d1"],[]],
