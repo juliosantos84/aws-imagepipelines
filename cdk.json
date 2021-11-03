@@ -15,7 +15,7 @@
     "@aws-cdk/aws-lambda:recognizeVersionProps": true,
     "everythingbiig-aws-imagepipelines/parentImageNames": ["amzn2-ami-hvm-2.0.20211001.1-x86_64-ebs"],
     "everythingbiig-aws-imagepipelines/parentImageOwners": ["amazon"],
-    "everythingbiig-aws-imagepipelines/etherythingbiig:amiName": "etherythingbiig-{{imagebuilder:buildDate}}",
+    "everythingbiig-aws-imagepipelines/etherythingbiig:amiName": "etherythingbiig-{{etherythingbiig:recipeVersion}}-{{imagebuilder:buildDate}}",
     "everythingbiig-aws-imagepipelines/etherythingbiig:recipeVersion": "0.0.0-replaced-by-mvn-version",
     "everythingbiig-aws-imagepipelines/etherythingbiig:componentPlatform": "Linux",
     "everythingbiig-aws-imagepipelines/etherythingbiig:componentVersion": "0.0.0-replaced-by-mvn-version",
