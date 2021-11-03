@@ -73,7 +73,7 @@ public class EtherythingbiigImagePipeline extends AbstractImagePipeline {
     protected Asset getScriptsAsset() {
         if (this.scriptsAsset == null) {
             this.scriptsAsset = getAsset("scriptsAsset", "/assets/etherythingbiig/scripts");
-            this.scriptsAsset.grantRead(getImageBuilderRoleArn());
+            this.scriptsAsset.grantRead(getImagebuilderRole());
         }
         return this.scriptsAsset;
     }
@@ -81,7 +81,7 @@ public class EtherythingbiigImagePipeline extends AbstractImagePipeline {
     protected Asset getServicesAsset() {
         if (this.servicesAsset == null) {
             this.servicesAsset = getAsset("servicesAsset", "/assets/etherythingbiig/services");
-            this.servicesAsset.grantRead(getImageBuilderRoleArn());
+            this.servicesAsset.grantRead(getImagebuilderRole());
         }
         return this.servicesAsset;
     }

@@ -10,12 +10,26 @@ public final class ImagepipelineApp {
 
         new EtherythingbiigImagePipeline(app, "etherythingbiigImagePipeline", 
             StackProps.builder()
-                .env(Environment.builder()
-                    .account(System.getenv("CDK_DEFAULT_ACCOUNT"))
-                    .region(System.getenv("CDK_DEFAULT_REGION"))
-                    .build())
+                .env(getDeployEnvironment())
                 .build());
 
         app.synth();
+    }
+
+    protected static Environment getDeployEnvironment() {
+        String account = System.getenv("CDK_DEPLOY_ACCOUNT");
+        if (account == null || account.trim().length() == 0) {
+            account = System.getenv("CDK_DEFAULT_ACCOUNT");
+            System.out.println(String.format("Falling back to CDK_DEFAULT_ACCOUNT=%s", account));
+        }
+        String region = System.getenv("CDK_DEPLOY_REGION");
+        if (region == null || region.trim().length() == 0) {
+            region = System.getenv("CDK_DEFAULT_REGION");
+            System.out.println(String.format("Falling back to CDK_DEFAULT_REGION=%s", region));
+        }
+        return Environment.builder()
+                .account(account)
+                .region(region)
+                .build();
     }
 }
