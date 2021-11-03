@@ -11,7 +11,10 @@ if [ ! -z "${1}" ]; then
     echo -e "Overriding versions with\n\t${RECIPE_VERSION}\n\t${COMPONENT_VERSION}"
 fi
 
-VERSION=${1:-"from cdk.json"}
+VERSION=${1:-$(cat cdk.json | jq -r '.context["everythingbiig-aws-imagepipelines/etherythingbiig:recipeVersion"]')}
+
+echo "Updating project version to ${VERSION}"
+mvn versions:set -DnewVersion=${VERSION}
 
 echo "Deploying version ${VERSION}"
 cdk deploy etherythingbiigImagePipeline \
