@@ -51,8 +51,8 @@ public class EtherythingbiigImagePipeline extends AbstractImagePipeline {
     @Override
     @SuppressWarnings("unchecked")
     protected List<String> getDistributionRegions() {
-        return (List<String>) super.getNode()
-            .tryGetContext("everythingbiig-aws-imagepipelines/etherythingbiig:distributionRegions");
+        return Arrays.asList((String) super.getNode()
+            .tryGetContext("everythingbiig-aws-imagepipelines/etherythingbiig:distributionRegion"));
     }
 
     @Override
