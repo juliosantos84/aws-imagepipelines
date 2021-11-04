@@ -1,0 +1,19 @@
+[Unit]
+Description=Ethereum go client volume attachment
+# Network dependency
+Requires=network-online.target
+After=var-lib-chaindata.mount
+
+[Service]
+User=ubuntu
+Group=ubuntu
+Type=oneshot
+Restart=on-failure
+RestartSec=60
+
+ExecStart=/usr/local/bin/create-directories.sh
+
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target
