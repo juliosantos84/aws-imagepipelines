@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.everythingbiig</groupId>
     <artifactId>aws-imagepipelines</artifactId>
-    <version>2.1.5</version>
+    <version>3.0.0</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <cdk.version>1.111.0</cdk.version>
