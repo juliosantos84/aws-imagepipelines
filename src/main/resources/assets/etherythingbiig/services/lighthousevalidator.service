@@ -1,10 +1,8 @@
 [Unit]
 Description=Lighthouse Validator
 # Network dependency
-Requires=network-online.target
-After=network-online.target
-# Lighthouse dependency
-After=lighthousebeacon.service
+Requires=network-online.target chaindata-volume-attachment.service var-lib-chaindata.mount var-lib-chaindata-directory-creator.service
+After=network-online.target chaindata-volume-attachment.service var-lib-chaindata.mount var-lib-chaindata-directory-creator.service geth.service lighthousebeacon.service
 
 [Service]
 Type=simple

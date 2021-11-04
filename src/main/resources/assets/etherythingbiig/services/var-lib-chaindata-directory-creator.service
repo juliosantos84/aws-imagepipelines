@@ -1,8 +1,8 @@
 [Unit]
 Description=Ethereum go client volume attachment
 # Network dependency
-Requires=network-online.target
-After=var-lib-chaindata.mount
+Requires=network-online.target chaindata-volume-attachment.service var-lib-chaindata.mount
+After=network-online.target chaindata-volume-attachment.service var-lib-chaindata.mount
 
 [Service]
 User=ubuntu

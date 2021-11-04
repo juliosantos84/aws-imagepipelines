@@ -1,10 +1,8 @@
 [Unit]
 Description=Lighthouse Beacon Node Service
 # Network dependency
-Requires=network-online.target
-After=network-online.target
-# Geth service dependency
-After=geth.service
+Requires=network-online.target chaindata-volume-attachment.service var-lib-chaindata.mount var-lib-chaindata-directory-creator.service
+After=network-online.target chaindata-volume-attachment.service var-lib-chaindata.mount var-lib-chaindata-directory-creator.service geth.service
 
 [Service]
 Type=simple

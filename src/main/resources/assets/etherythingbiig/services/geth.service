@@ -1,7 +1,8 @@
 [Unit]
 Description=Ethereum go client
 # Network dependency
-After=network-online.target 
+Requires=network-online.target chaindata-volume-attachment.service var-lib-chaindata.mount var-lib-chaindata-directory-creator.service
+After=network-online.target var-lib-chaindata.mount var-lib-chaindata-directory-creator.service
 Wants=network-online.target
 
 [Service]

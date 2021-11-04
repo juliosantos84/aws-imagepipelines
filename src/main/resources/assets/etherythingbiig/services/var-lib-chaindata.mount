@@ -2,9 +2,9 @@
 Description=Mount for chaindata volume
 # Network dependency
 After=network-online.target
-Requires=network-online.target
+Requires=network-online.target chaindata-volume-attachment.service
 # Volume dependency
-After=chaindata-volume-attachment.service
+After=network-online.target chaindata-volume-attachment.service
 
 [Mount]
 What=/dev/nvme1n1
