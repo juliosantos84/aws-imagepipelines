@@ -232,7 +232,7 @@ phases:
             set -x
             id -u goeth
             test -x /usr/local/bin/geth
-            geth version | grep Version | grep 1.10.8
+            geth version
       - name: TestLighthouseInstall
         action: ExecuteBash
         onFailure: Abort
@@ -245,7 +245,7 @@ phases:
             id -u lighthousebeacon
             id -u lighthousevalidator
             test -x /usr/local/bin/lighthouse
-            lighthouse --version | grep {{LIGHTHOUSE_VERSION}}
+            lighthouse --version
       - name: TestPrometheusInstall
         action: ExecuteBash
         onFailure: Abort
