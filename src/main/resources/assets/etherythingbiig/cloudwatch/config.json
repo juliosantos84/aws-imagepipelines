@@ -74,7 +74,7 @@
       "append_dimensions": {
         "AutoScalingGroupName": "${aws:AutoScalingGroupName}"
       },
-      "aggregation_dimensions" : [["AutoScalingGroupName"], ["d1"],[]],
+      "aggregation_dimensions" : [["AutoScalingGroupName"]],
       "force_flush_interval" : 30
     },
     "logs": {
