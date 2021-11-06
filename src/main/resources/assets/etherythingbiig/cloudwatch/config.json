@@ -38,14 +38,41 @@
             "mem_total"
           ],
           "metrics_collection_interval": 60
-        },
+        }
+      },
+      "append_dimensions": {
+        "InstanceName": "${aws:InstanceName}"
+      },
+      "aggregation_dimensions" : [["InstanceName"]],
+      "force_flush_interval" : 30
+    },
+    "logs": {
+      "logs_collected": {
+        "files": {
+          "collect_list": [
+            {
+              "file_path": "/var/log/amazon-cloudwatch-agent.log",
+              "log_group_name": "amazon-cloudwatch-agent.log",
+              "log_stream_name": "amazon-cloudwatch-agent.log",
+              "timezone": "UTC"
+            },
+            {
+              "file_path": "/var/log/syslog",
+              "log_group_name": "syslog",
+              "log_stream_name": "syslog",
+              "timezone": "UTC"
+            }
+          ]
+        }
+      },
+      "metrics_collected": {
         "prometheus":{
           "cluster_name":"ethbeaconchain-cluster",
-          "log_group_name":"Prometheus",
+          "log_group_name":"ethbeaconchain-prometheus",
           "prometheus_config_path":"/etc/prometheus/prometheus.yml",
           "emf_processor":{
              "metric_declaration_dedup":true,
-             "metric_namespace":"EthBeaconChain",
+             "metric_namespace":"ethbeaconchain-prometheus",
              "metric_unit":{
                 "sync_peers_per_status": "Count",
                 "sync_slots_per_second": "Seconds",
@@ -72,31 +99,6 @@
             "eth1_sync_fallback_connected"
           ],
           "metrics_collection_interval": 60
-        }
-      },
-      "append_dimensions": {
-        "InstanceName": "${aws:InstanceName}"
-      },
-      "aggregation_dimensions" : [["InstanceName"]],
-      "force_flush_interval" : 30
-    },
-    "logs": {
-      "logs_collected": {
-        "files": {
-          "collect_list": [
-            {
-              "file_path": "/var/log/amazon-cloudwatch-agent.log",
-              "log_group_name": "amazon-cloudwatch-agent.log",
-              "log_stream_name": "amazon-cloudwatch-agent.log",
-              "timezone": "UTC"
-            },
-            {
-              "file_path": "/var/log/syslog",
-              "log_group_name": "syslog",
-              "log_stream_name": "syslog",
-              "timezone": "UTC"
-            }
-          ]
         }
       },
       "log_stream_name": "my_log_stream_name",
