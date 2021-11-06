@@ -61,20 +61,12 @@
             "mem_total"
           ],
           "metrics_collection_interval": 60
-        },
-        "processes": {
-          "measurement": [
-            "running",
-            "sleeping",
-            "dead"
-          ],
-          "metrics_collection_interval": 60
         }
       },
       "append_dimensions": {
-        "AutoScalingGroupName": "${aws:AutoScalingGroupName}"
+        "InstanceName": "${aws:InstanceName}"
       },
-      "aggregation_dimensions" : [["AutoScalingGroupName"]],
+      "aggregation_dimensions" : [["InstanceName"]],
       "force_flush_interval" : 30
     },
     "logs": {
