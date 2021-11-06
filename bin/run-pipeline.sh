@@ -10,4 +10,4 @@ PIPELINE_ARN=$(aws imagebuilder list-image-pipelines \
 --filters "name=name,values=${PIPELINE_NAME}" ${CDK_DEPLOY_PROFILE_FLAG} \
 | jq -r '.imagePipelineList[0].arn')
 
-aws imagebuilder start-image-pipeline-execution --image-pipeline-arn $PIPELINE_ARN ${CDK_DEPLOY_PROFILE_FLAG} ${CDK_DEPLOY_EXTRA_CONTEXT}
+aws imagebuilder start-image-pipeline-execution --image-pipeline-arn $PIPELINE_ARN ${CDK_DEPLOY_PROFILE_FLAG}
