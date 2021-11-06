@@ -90,15 +90,7 @@
                    ]
                 }
              ]
-          },
-          "measurement":[
-            "sync_peers_per_status",
-            "sync_slots_per_second",
-            "sync_eth1_connected",
-            "eth1_latest_cached_block_timestamp",
-            "eth1_sync_fallback_connected"
-          ],
-          "metrics_collection_interval": 60
+          }
         }
       },
       "log_stream_name": "my_log_stream_name",
