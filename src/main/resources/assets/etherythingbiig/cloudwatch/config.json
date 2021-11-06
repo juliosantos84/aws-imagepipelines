@@ -44,7 +44,7 @@
             "write_time",
             "io_time"
           ],
-          "metrics_collection_interval": 60
+          "metrics_collection_interval": 300
         },
         "swap": {
           "measurement": [
@@ -52,7 +52,7 @@
             "swap_free",
             "swap_used_percent"
           ],
-          "metrics_collection_interval": 60
+          "metrics_collection_interval": 300
         },
         "mem": {
           "measurement": [
@@ -61,6 +61,32 @@
             "mem_total"
           ],
           "metrics_collection_interval": 60
+        },
+        "prometheus":{
+          "cluster_name":"ethbeaconchain-cluster",
+          "log_group_name":"Prometheus",
+          "prometheus_config_path":"/etc/prometheus/prometheus.yml",
+          "emf_processor":{
+             "metric_declaration_dedup":true,
+             "metric_namespace":"EthBeaconChain",
+             "metric_unit":{
+                "sync_peers_per_status": "Count",
+                "sync_slots_per_second": "Seconds",
+                "sync_eth1_connected": "Count",
+                "eth1_sync_fallback_connected": "Count"
+             },
+             "metric_declaration":[
+                {
+                   "metric_selectors":[
+                      "^sync_peers_per_status$",
+                      "^sync_slots_per_second$",
+                      "^sync_eth1_connected$",
+                      "^eth1_latest_cached_block_timestamp$",
+                      "^eth1_sync_fallback_connected$"
+                   ]
+                }
+             ]
+          }
         }
       },
       "append_dimensions": {
