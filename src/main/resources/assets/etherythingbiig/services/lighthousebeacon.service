@@ -13,7 +13,7 @@ RestartSec=30
 
 EnvironmentFile=/etc/systemd/system/lighthousebeacon.service.env
 
-ExecStart=/usr/local/bin/lighthouse beacon_node --datadir ${LIGHTHOUSE_DATA_DIR} --network ${LIGHTHOUSE_NETWORK} --staking --eth1 --eth1-endpoints ${LIGHTHOUSE_ETH1_ENDPOINTS} --metrics
+ExecStart=/usr/local/bin/lighthouse beacon_node --datadir ${LIGHTHOUSE_DATA_DIR} --network ${LIGHTHOUSE_NETWORK} --staking --eth1 --eth1-endpoints ${LIGHTHOUSE_ETH1_ENDPOINTS} ${LIGHTHOUSE_METRICS_FLAG}
 
 [Install]
 WantedBy=multi-user.target
