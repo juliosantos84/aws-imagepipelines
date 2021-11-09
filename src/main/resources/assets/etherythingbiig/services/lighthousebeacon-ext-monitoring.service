@@ -1,0 +1,19 @@
+[Unit]
+Description=Lighthouse Beacon Node Service
+# Network dependency
+Requires=network-online.target chaindata-volume-attachment.service var-lib-chaindata.mount var-lib-chaindata-directory-creator.service
+After=network-online.target chaindata-volume-attachment.service var-lib-chaindata.mount var-lib-chaindata-directory-creator.service geth.service
+
+[Service]
+Type=simple
+User=lighthousebeacon
+Group=lighthousebeacon
+Restart=always
+RestartSec=30
+
+EnvironmentFile=/etc/systemd/system/lighthousebeacon.service.env
+
+ExecStart=/usr/local/bin/lighthouse beacon_node --datadir ${LIGHTHOUSE_DATA_DIR} --network ${LIGHTHOUSE_NETWORK} --staking --eth1 --eth1-endpoints ${LIGHTHOUSE_ETH1_ENDPOINTS} --monitoring-endpoint ${LIGHTHOUSE_MONITORING_ENDPOINT}
+
+[Install]
+WantedBy=multi-user.target
