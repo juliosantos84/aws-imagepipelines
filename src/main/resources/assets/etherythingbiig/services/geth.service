@@ -14,7 +14,7 @@ RestartSec=60
 
 EnvironmentFile=/etc/systemd/system/geth.service.env
 
-ExecStart=geth ${GETH_NETWORK} --http --http.addr ${GETH_LISTEN_ADDRESS} --http.api ${GETH_HTTP_APIS} --http.vhosts * --datadir ${GETH_DATA_DIR} ${GETH_METRICS_FLAG}
+ExecStart=geth ${GETH_NETWORK} --http --http.addr ${GETH_LISTEN_ADDRESS} --http.api ${GETH_HTTP_APIS} --http.vhosts * --datadir ${GETH_DATA_DIR}
 
 
 [Install]
