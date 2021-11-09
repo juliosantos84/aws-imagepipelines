@@ -65,34 +65,6 @@
           ]
         }
       },
-      "metrics_collected": {
-        "prometheus":{
-          "cluster_name":"ethbeaconchain-cluster",
-          "log_group_name":"ethbeaconchain-prometheus",
-          "prometheus_config_path":"/etc/prometheus/prometheus.yml",
-          "emf_processor":{
-             "metric_declaration_dedup":true,
-             "metric_namespace":"ethbeaconchain-prometheus",
-             "metric_unit":{
-                "sync_peers_per_status": "Count",
-                "sync_slots_per_second": "Seconds",
-                "sync_eth1_connected": "Count",
-                "eth1_sync_fallback_connected": "Count"
-             },
-             "metric_declaration":[
-                {
-                   "metric_selectors":[
-                      "^sync_peers_per_status$",
-                      "^sync_slots_per_second$",
-                      "^sync_eth1_connected$",
-                      "^eth1_latest_cached_block_timestamp$",
-                      "^eth1_sync_fallback_connected$"
-                   ]
-                }
-             ]
-          }
-        }
-      },
       "log_stream_name": "my_log_stream_name",
       "force_flush_interval" : 15
     }
