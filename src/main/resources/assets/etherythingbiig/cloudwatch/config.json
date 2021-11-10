@@ -41,9 +41,10 @@
         }
       },
       "append_dimensions": {
-        "InstanceName": "${aws:InstanceName}"
+        "InstanceName": "${aws:InstanceName}",
+        "InstanceId": "${aws:InstanceId}"
       },
-      "aggregation_dimensions" : [["InstanceName"]],
+      "aggregation_dimensions" : [["InstanceName"],["InstanceId"]],
       "force_flush_interval" : 30
     },
     "logs": {
