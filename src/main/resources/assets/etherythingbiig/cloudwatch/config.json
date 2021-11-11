@@ -41,10 +41,11 @@
         }
       },
       "append_dimensions": {
+        "AutoScalingGroupName": "${aws:AutoScalingGroupName}",
         "InstanceName": "${aws:InstanceName}",
         "InstanceId": "${aws:InstanceId}"
       },
-      "aggregation_dimensions" : [["InstanceName"],["InstanceId"]],
+      "aggregation_dimensions" : [["AutoScalingGroupName"]],
       "force_flush_interval" : 30
     },
     "logs": {
