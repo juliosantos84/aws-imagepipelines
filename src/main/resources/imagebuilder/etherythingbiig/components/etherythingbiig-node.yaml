@@ -76,6 +76,9 @@ phases:
             wget {{CLOUDWATCH_URL}} -O /tmp/amazon-cloudwatch-agent.deb
             echo "Installing /tmp/amazon-cloudwatch-agent.deb"
             sudo dpkg -i -E /tmp/amazon-cloudwatch-agent.deb
+            echo "#! /bin/bash" | sudo tee -a /opt/aws/amazon-cloudwatch-agent/bin/restart-cw-agent.sh
+            echo "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:{{CLOUDWATCH_CONFIG_PARAM}}" | sudo tee -a /opt/aws/amazon-cloudwatch-agent/bin/restart-cw-agent.sh
+            sudo chmod +x /opt/aws/amazon-cloudwatch-agent/bin/restart-cw-agent.sh
       - name: CreateGethUsers
         action: ExecuteBash
         onFailure: Abort
@@ -217,7 +220,7 @@ phases:
           - aws s3 cp {{SERVICES_S3_URL}} /tmp/services.zip
           - sudo unzip /tmp/services.zip -d /etc/systemd/system
           - sudo systemctl daemon-reload
-          - sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:{{CLOUDWATCH_CONFIG_PARAM}}
+          - sudo /opt/aws/amazon-cloudwatch-agent/bin/restart-cw-agent.sh
       - name: ConfigureMetadata
         action: ExecuteBash
         onFailure: Abort
