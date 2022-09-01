@@ -14,7 +14,7 @@ RestartSec=60
 
 EnvironmentFile=/etc/systemd/system/geth.service.env
 
-ExecStart=geth ${GETH_NETWORK} --http --http.addr ${GETH_LISTEN_ADDRESS} --http.api ${GETH_HTTP_APIS} --http.vhosts * --datadir ${GETH_DATA_DIR}
+ExecStart=geth ${GETH_NETWORK} --http --http.addr ${GETH_LISTEN_ADDRESS} --http.api ${GETH_HTTP_APIS} --http.vhosts * --datadir ${GETH_DATA_DIR} --authrpc.addr ${GETH_LISTEN_ADDRESS} --authrpc.port 8551 --authrpc.vhosts * --authrpc.jwtsecret ${SHARED_JWT_SECRET}
 
 
 [Install]
