@@ -11,4 +11,5 @@ echo "Setting ownership..." \
 && sudo chown -R goeth:goeth ${VOLUME_MOUNT_PATH}/goethereum \
 && sudo chown -R lighthousebeacon:lighthousebeacon ${VOLUME_MOUNT_PATH}/lighthouse \
 && sudo chown -R lighthousevalidator:lighthousevalidator ${VOLUME_MOUNT_PATH}/lighthouse/validators \
-&& sudo chown -R :beaconshared ${VOLUME_MOUNT_PATH}/beaconshared
+&& sudo chown -R :beaconshared ${VOLUME_MOUNT_PATH}/beaconshared \
+&& sudo chmod g+wr /var/lib/chaindata/beaconshared
