@@ -31,7 +31,7 @@ parameters:
       default: "2.20.0"
       description: The Prometheus version to install.
 phases:
-  - name: 'build'
+  - name: "build"
     steps:
       - name: InstallCfnBootstrap
         action: ExecuteBash
@@ -70,15 +70,23 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
-          - |
-            set -x
-            echo "Downloading CloudWatch Agent from {{CLOUDWATCH_URL}}"
-            wget {{CLOUDWATCH_URL}} -O /tmp/amazon-cloudwatch-agent.deb
-            echo "Installing /tmp/amazon-cloudwatch-agent.deb"
-            sudo dpkg -i -E /tmp/amazon-cloudwatch-agent.deb
-            echo "#! /bin/bash" | sudo tee -a /opt/aws/amazon-cloudwatch-agent/bin/restart-cw-agent.sh
-            echo "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:{{CLOUDWATCH_CONFIG_PARAM}}" | sudo tee -a /opt/aws/amazon-cloudwatch-agent/bin/restart-cw-agent.sh
-            sudo chmod +x /opt/aws/amazon-cloudwatch-agent/bin/restart-cw-agent.sh
+            - |
+              set -x
+              echo "Downloading CloudWatch Agent from {{CLOUDWATCH_URL}}"
+              wget {{CLOUDWATCH_URL}} -O /tmp/amazon-cloudwatch-agent.deb
+              echo "Installing /tmp/amazon-cloudwatch-agent.deb"
+              sudo dpkg -i -E /tmp/amazon-cloudwatch-agent.deb
+              echo "#! /bin/bash" | sudo tee -a /opt/aws/amazon-cloudwatch-agent/bin/restart-cw-agent.sh
+              echo "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:{{CLOUDWATCH_CONFIG_PARAM}}" | sudo tee -a /opt/aws/amazon-cloudwatch-agent/bin/restart-cw-agent.sh
+              sudo chmod +x /opt/aws/amazon-cloudwatch-agent/bin/restart-cw-agent.sh
+      - name: CreateGroups
+        action: ExecuteBash
+        onFailure: Abort
+        timeoutSeconds: 5
+        maxAttempts: 1
+        inputs:
+          commands:
+            - sudo groupadd beaconshared
       - name: CreateGethUsers
         action: ExecuteBash
         onFailure: Abort
@@ -87,6 +95,7 @@ phases:
         inputs:
           commands:
             - sudo useradd --no-create-home --shell /bin/false goeth
+            - sudo usermod -a -G beaconshared goeth
       - name: InstallGethBinaries
         action: ExecuteBash
         onFailure: Abort
@@ -94,13 +103,13 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
-          - set -x
-          - |
-            BINARY_NAME=geth-linux-amd64-{{GETH_VERSION}}
-            ARCHIVE_NAME=$BINARY_NAME.tar.gz
-            curl -L https://gethstore.blob.core.windows.net/builds/$ARCHIVE_NAME --output /tmp/$ARCHIVE_NAME
-            sudo tar -xvf /tmp/$ARCHIVE_NAME
-            sudo mv ./$BINARY_NAME/geth /usr/local/bin/geth
+            - set -x
+            - |
+              BINARY_NAME=geth-linux-amd64-{{GETH_VERSION}}
+              ARCHIVE_NAME=$BINARY_NAME.tar.gz
+              curl -L https://gethstore.blob.core.windows.net/builds/$ARCHIVE_NAME --output /tmp/$ARCHIVE_NAME
+              sudo tar -xvf /tmp/$ARCHIVE_NAME
+              sudo mv ./$BINARY_NAME/geth /usr/local/bin/geth
       - name: CreateLighthouseUsers
         action: ExecuteBash
         onFailure: Abort
@@ -108,9 +117,10 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
-          - set -x
-          - sudo useradd --no-create-home --shell /bin/false lighthousebeacon
-          - sudo useradd --no-create-home --shell /bin/false lighthousevalidator
+            - set -x
+            - sudo useradd --no-create-home --shell /bin/false lighthousebeacon
+            - sudo useradd --no-create-home --shell /bin/false lighthousevalidator
+            - sudo usermod -a -G beaconshared lighthousebeacon
       - name: InstallLighthouseBinaries
         action: ExecuteBash
         onFailure: Abort
@@ -118,16 +128,16 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
-          - set -x
-          - |
-            LIGHTHOUSE_ARCHIVE=lighthouse-{{LIGHTHOUSE_VERSION}}-x86_64-unknown-linux-gnu.tar.gz
-            LIGHTHOUSE_DOWNLOAD_URL=https://github.com/sigp/lighthouse/releases/download/{{LIGHTHOUSE_VERSION}}/${LIGHTHOUSE_ARCHIVE}
-            DOWNLOAD_DIR=/tmp
-            echo "Downloading ${LIGHTHOUSE_DOWNLOAD_URL} (${LIGHTHOUSE_ARCHIVE}) to ${DOWNLOAD_DIR}/${LIGHTHOUSE_ARCHIVE}"
-            curl -L ${LIGHTHOUSE_DOWNLOAD_URL} --output ${DOWNLOAD_DIR}/${LIGHTHOUSE_ARCHIVE}
-            tar -xvf ${DOWNLOAD_DIR}/${LIGHTHOUSE_ARCHIVE}
-            sudo mv lighthouse /usr/local/bin/lighthouse
-            sudo chown lighthousebeacon:users /usr/local/bin/lighthouse
+            - set -x
+            - |
+              LIGHTHOUSE_ARCHIVE=lighthouse-{{LIGHTHOUSE_VERSION}}-x86_64-unknown-linux-gnu.tar.gz
+              LIGHTHOUSE_DOWNLOAD_URL=https://github.com/sigp/lighthouse/releases/download/{{LIGHTHOUSE_VERSION}}/${LIGHTHOUSE_ARCHIVE}
+              DOWNLOAD_DIR=/tmp
+              echo "Downloading ${LIGHTHOUSE_DOWNLOAD_URL} (${LIGHTHOUSE_ARCHIVE}) to ${DOWNLOAD_DIR}/${LIGHTHOUSE_ARCHIVE}"
+              curl -L ${LIGHTHOUSE_DOWNLOAD_URL} --output ${DOWNLOAD_DIR}/${LIGHTHOUSE_ARCHIVE}
+              tar -xvf ${DOWNLOAD_DIR}/${LIGHTHOUSE_ARCHIVE}
+              sudo mv lighthouse /usr/local/bin/lighthouse
+              sudo chown lighthousebeacon:users /usr/local/bin/lighthouse
       - name: InstallPrometheus
         action: ExecuteBash
         onFailure: Abort
@@ -135,65 +145,65 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
-          - set -x
-          - |
-            echo "Installing prometheus..."
+            - set -x
+            - |
+              echo "Installing prometheus..."
 
-            echo "Creating users..." \
-            && sudo useradd --no-create-home --shell /bin/false prometheus
+              echo "Creating users..." \
+              && sudo useradd --no-create-home --shell /bin/false prometheus
 
-            echo "Creating directories..." \
-            && sudo mkdir -p /etc/prometheus \
-            && sudo chown -R prometheus:prometheus /etc/prometheus \
-            && sudo mkdir -p /var/lib/prometheus \
-            && sudo chown -R prometheus:prometheus /var/lib/prometheus
+              echo "Creating directories..." \
+              && sudo mkdir -p /etc/prometheus \
+              && sudo chown -R prometheus:prometheus /etc/prometheus \
+              && sudo mkdir -p /var/lib/prometheus \
+              && sudo chown -R prometheus:prometheus /var/lib/prometheus
 
-            echo "Downloading and installing binaries" \
-            && curl -LO https://github.com/prometheus/prometheus/releases/download/v{{PROMETHEUS_VERSION}}/prometheus-{{PROMETHEUS_VERSION}}.linux-amd64.tar.gz \
-            && tar xvf prometheus-{{PROMETHEUS_VERSION}}.linux-amd64.tar.gz \
-            && sudo cp prometheus-{{PROMETHEUS_VERSION}}.linux-amd64/{prometheus,promtool} /usr/local/bin/ \
-            && sudo chown -R prometheus:prometheus /usr/local/bin/{prometheus,promtool} \
-            && sudo cp -r prometheus-{{PROMETHEUS_VERSION}}.linux-amd64/consoles /etc/prometheus \
-            && sudo cp -r prometheus-{{PROMETHEUS_VERSION}}.linux-amd64/console_libraries /etc/prometheus \
-            && sudo chown -R prometheus:prometheus /etc/prometheus/consoles \
-            && sudo chown -R prometheus:prometheus /etc/prometheus/console_libraries \
-            && rm -rf prometheus-{{PROMETHEUS_VERSION}}.linux-amd64.tar.gz prometheus-{{PROMETHEUS_VERSION}}.linux-amd64
+              echo "Downloading and installing binaries" \
+              && curl -LO https://github.com/prometheus/prometheus/releases/download/v{{PROMETHEUS_VERSION}}/prometheus-{{PROMETHEUS_VERSION}}.linux-amd64.tar.gz \
+              && tar xvf prometheus-{{PROMETHEUS_VERSION}}.linux-amd64.tar.gz \
+              && sudo cp prometheus-{{PROMETHEUS_VERSION}}.linux-amd64/{prometheus,promtool} /usr/local/bin/ \
+              && sudo chown -R prometheus:prometheus /usr/local/bin/{prometheus,promtool} \
+              && sudo cp -r prometheus-{{PROMETHEUS_VERSION}}.linux-amd64/consoles /etc/prometheus \
+              && sudo cp -r prometheus-{{PROMETHEUS_VERSION}}.linux-amd64/console_libraries /etc/prometheus \
+              && sudo chown -R prometheus:prometheus /etc/prometheus/consoles \
+              && sudo chown -R prometheus:prometheus /etc/prometheus/console_libraries \
+              && rm -rf prometheus-{{PROMETHEUS_VERSION}}.linux-amd64.tar.gz prometheus-{{PROMETHEUS_VERSION}}.linux-amd64
 
-            sudo cat <<PROM_YML >> ./prometheus.yml \
-            && sudo mv ./prometheus.yml /etc/prometheus/prometheus.yml \
-            && sudo chown -R prometheus:prometheus /etc/prometheus/prometheus.yml
-            global:
-              scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
-              evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
-              # scrape_timeout is set to the global default (10s).
-            # Alertmanager configuration
-            alerting:
-              alertmanagers:
-              - static_configs:
-                - targets:
-                  # - alertmanager:9093
-            # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
-            rule_files:
-              # - "first_rules.yml"
-              # - "second_rules.yml"
-            # A scrape configuration containing exactly one endpoint to scrape:
-            # Here it's Prometheus itself.
-            scrape_configs:
-              - job_name: 'ethbeaconchain'
-                sample_limit: 10000
-                ec2_sd_configs:
-                  - port: 9094
-                    filters:
-                      - name: "tag:Name"
-                        values:
-                          - "ethereumBeaconChainService/goeth/goeth"
-                  - port: 6060
-                    filters:
-                      - name: "tag:Name"
-                        values:
-                          - "ethereumBeaconChainService/goeth/goeth"
+              sudo cat <<PROM_YML >> ./prometheus.yml \
+              && sudo mv ./prometheus.yml /etc/prometheus/prometheus.yml \
+              && sudo chown -R prometheus:prometheus /etc/prometheus/prometheus.yml
+              global:
+                scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+                evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+                # scrape_timeout is set to the global default (10s).
+              # Alertmanager configuration
+              alerting:
+                alertmanagers:
+                - static_configs:
+                  - targets:
+                    # - alertmanager:9093
+              # Load rules once and periodically evaluate them according to the global 'evaluation_interval'.
+              rule_files:
+                # - "first_rules.yml"
+                # - "second_rules.yml"
+              # A scrape configuration containing exactly one endpoint to scrape:
+              # Here it's Prometheus itself.
+              scrape_configs:
+                - job_name: 'ethbeaconchain'
+                  sample_limit: 10000
+                  ec2_sd_configs:
+                    - port: 9094
+                      filters:
+                        - name: "tag:Name"
+                          values:
+                            - "ethereumBeaconChainService/goeth/goeth"
+                    - port: 6060
+                      filters:
+                        - name: "tag:Name"
+                          values:
+                            - "ethereumBeaconChainService/goeth/goeth"
 
-            PROM_YML
+              PROM_YML
       - name: InstallScripts
         action: ExecuteBash
         onFailure: Abort
@@ -201,14 +211,14 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
-          - set -x
-          - aws s3 cp {{SCRIPTS_S3_URL}} /tmp/scripts.zip
-          - sudo unzip /tmp/scripts.zip -d /usr/local/bin           
-          - sudo chmod 755 /usr/local/bin/*-goeth-volume.sh
-          - sudo chmod 755 /usr/local/bin/general/*.sh
-          - sudo mv /usr/local/bin/general/*.sh /usr/local/bin
-          - sudo chown lighthousebeacon:lighthousebeacon /usr/local/bin/*.sh
-          - sudo chown goeth:goeth /usr/local/bin/*-goeth-volume.sh
+            - set -x
+            - aws s3 cp {{SCRIPTS_S3_URL}} /tmp/scripts.zip
+            - sudo unzip /tmp/scripts.zip -d /usr/local/bin
+            - sudo chmod 755 /usr/local/bin/*-goeth-volume.sh
+            - sudo chmod 755 /usr/local/bin/general/*.sh
+            - sudo mv /usr/local/bin/general/*.sh /usr/local/bin
+            - sudo chown lighthousebeacon:lighthousebeacon /usr/local/bin/*.sh
+            - sudo chown goeth:goeth /usr/local/bin/*-goeth-volume.sh
       - name: InstallServices
         action: ExecuteBash
         onFailure: Abort
@@ -216,11 +226,11 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
-          - set -x
-          - aws s3 cp {{SERVICES_S3_URL}} /tmp/services.zip
-          - sudo unzip /tmp/services.zip -d /etc/systemd/system
-          - sudo systemctl daemon-reload
-          - sudo /opt/aws/amazon-cloudwatch-agent/bin/restart-cw-agent.sh
+            - set -x
+            - aws s3 cp {{SERVICES_S3_URL}} /tmp/services.zip
+            - sudo unzip /tmp/services.zip -d /etc/systemd/system
+            - sudo systemctl daemon-reload
+            - sudo /opt/aws/amazon-cloudwatch-agent/bin/restart-cw-agent.sh
       - name: ConfigureMetadata
         action: ExecuteBash
         onFailure: Abort
@@ -228,11 +238,11 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
-          - set -x
-          - |
-            echo goeth > /home/ubuntu/volume-name-tag
-            echo /var/lib/chaindata > /home/ubuntu/volume-mount-path
-  - name: 'test'
+            - set -x
+            - |
+              echo goeth > /home/ubuntu/volume-name-tag
+              echo /var/lib/chaindata > /home/ubuntu/volume-mount-path
+  - name: "test"
     steps:
       - name: TestGethInstall
         action: ExecuteBash
@@ -241,11 +251,11 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
-          - |
-            set -x
-            id -u goeth
-            test -x /usr/local/bin/geth
-            geth version
+            - |
+              set -x
+              id -u goeth
+              test -x /usr/local/bin/geth
+              geth version
       - name: TestLighthouseInstall
         action: ExecuteBash
         onFailure: Abort
@@ -253,12 +263,12 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
-          - |
-            set -x
-            id -u lighthousebeacon
-            id -u lighthousevalidator
-            test -x /usr/local/bin/lighthouse
-            lighthouse --version
+            - |
+              set -x
+              id -u lighthousebeacon
+              id -u lighthousevalidator
+              test -x /usr/local/bin/lighthouse
+              lighthouse --version
       - name: TestPrometheusInstall
         action: ExecuteBash
         onFailure: Abort
@@ -266,10 +276,10 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
-          - |
-            set -x
-            id -u prometheus
-            test -x /usr/local/bin/prometheus
+            - |
+              set -x
+              id -u prometheus
+              test -x /usr/local/bin/prometheus
       - name: TestMetadataConfiguration
         action: ExecuteBash
         onFailure: Abort
@@ -277,10 +287,10 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
-          - |
-            set -x
-            test "goeth" = "$(cat /home/ubuntu/volume-name-tag)"
-            test "/var/lib/chaindata" = "$(cat /home/ubuntu/volume-mount-path)"
+            - |
+              set -x
+              test "goeth" = "$(cat /home/ubuntu/volume-name-tag)"
+              test "/var/lib/chaindata" = "$(cat /home/ubuntu/volume-mount-path)"
       - name: TestServicesInstall
         action: ExecuteBash
         onFailure: Abort
@@ -288,17 +298,17 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
-          - |
-            set -x
-            test -f /etc/systemd/system/geth.service
-            test -f /etc/systemd/system/geth/geth.service.testnet.env
-            test -f /etc/systemd/system/geth/geth.service.mainnet.env
-            test -f /etc/systemd/system/lighthousebeacon.service
-            test -f /etc/systemd/system/lighthousebeacon/lighthousebeacon.service.testnet.env
-            test -f /etc/systemd/system/lighthousebeacon/lighthousebeacon.service.mainnet.env
-            test -f /etc/systemd/system/lighthousevalidator.service
-            test -f /etc/systemd/system/lighthousevalidator/lighthousevalidator.service.testnet.env
-            test -f /etc/systemd/system/lighthousevalidator/lighthousevalidator.service.mainnet.env
+            - |
+              set -x
+              test -f /etc/systemd/system/geth.service
+              test -f /etc/systemd/system/geth/geth.service.testnet.env
+              test -f /etc/systemd/system/geth/geth.service.mainnet.env
+              test -f /etc/systemd/system/lighthousebeacon.service
+              test -f /etc/systemd/system/lighthousebeacon/lighthousebeacon.service.testnet.env
+              test -f /etc/systemd/system/lighthousebeacon/lighthousebeacon.service.mainnet.env
+              test -f /etc/systemd/system/lighthousevalidator.service
+              test -f /etc/systemd/system/lighthousevalidator/lighthousevalidator.service.testnet.env
+              test -f /etc/systemd/system/lighthousevalidator/lighthousevalidator.service.mainnet.env
       - name: TestCloudWatchAgentInstall
         action: ExecuteBash
         onFailure: Abort
@@ -306,6 +316,6 @@ phases:
         maxAttempts: 1
         inputs:
           commands:
-          - |
-            set -x
-            sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a status
+            - |
+              set -x
+              sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a status

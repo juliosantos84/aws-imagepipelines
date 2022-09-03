@@ -13,7 +13,7 @@ RestartSec=30
 
 EnvironmentFile=/etc/systemd/system/lighthousebeacon.service.env
 
-ExecStart=/usr/local/bin/lighthouse beacon_node --network ${LIGHTHOUSE_NETWORK}  --http --datadir ${LIGHTHOUSE_DATA_DIR} --execution-endpoint ${LIGHTHOUSE_EXECUTION_ENDPOINT} --execution-jwt ${SHARED_JWT_SECRET} --monitoring-endpoint ${LIGHTHOUSE_MONITORING_ENDPOINT}
+ExecStart=/usr/local/bin/lighthouse beacon_node --network ${LIGHTHOUSE_NETWORK}  --http --datadir ${LIGHTHOUSE_DATA_DIR} --execution-endpoint http://localhost:8551 --execution-jwt ${SHARED_JWT_SECRET} --monitoring-endpoint ${LIGHTHOUSE_MONITORING_ENDPOINT}
 
 [Install]
 WantedBy=multi-user.target
