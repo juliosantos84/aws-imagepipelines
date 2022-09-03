@@ -4,7 +4,7 @@ VOLUME_MOUNT_PATH=$(cat /home/ubuntu/volume-mount-path)
 
 echo "Creating subdirectories..." \
 && sudo mkdir -p ${VOLUME_MOUNT_PATH}/goethereum \
-&& sudo mkdir -p ${VOLUME_MOUNT_PATH}/lighthouse/validators \ 
+&& sudo mkdir -p ${VOLUME_MOUNT_PATH}/lighthouse/validators \
 && sudo mkdir -p ${VOLUME_MOUNT_PATH}/beaconshared
 
 echo "Setting ownership..." \
